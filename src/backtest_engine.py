@@ -143,15 +143,23 @@ class BacktestEngine:
             if fvg['filled']:
                 continue
 
+            # Only evaluate bars AFTER the FVG formed. The gap's own three
+            # constituent candles (<= fvg['index']) trivially satisfy the fill
+            # condition and would self-fill it on formation.
+            if current_index <= fvg['index']:
+                continue
+
             # Update age
             fvg['age_bars'] = current_index - fvg['index']
 
-            # Check if filled (only when price touches the FAR side)
-            # Bullish FVG: filled when price goes UP and touches TOP
-            if fvg['type'] == 'bullish' and current_bar['High'] >= fvg['top']:
+            # Fill semantics must match the live FairValueGaps implementation
+            # (is_fvg_filled / check_live_fvg_fills): an FVG fills when price
+            # RETURNS to its near edge, not when it extends past the far edge.
+            # Bullish FVG: fills when price drops back to/below the BOTTOM
+            if fvg['type'] == 'bullish' and current_bar['Low'] <= fvg['bottom']:
                 fvg['filled'] = True
-            # Bearish FVG: filled when price goes DOWN and touches BOTTOM
-            elif fvg['type'] == 'bearish' and current_bar['Low'] <= fvg['bottom']:
+            # Bearish FVG: fills when price rises back to/above the TOP
+            elif fvg['type'] == 'bearish' and current_bar['High'] >= fvg['top']:
                 fvg['filled'] = True
 
     def get_active_fvgs(self, fvgs: List[Dict], current_index: int) -> List[Dict]:
@@ -343,21 +351,26 @@ class BacktestEngine:
                 memory_context = self.memory_manager.get_memory_context()
                 result = trading_agent.analyze_setup(fvg_context, market_data, memory_context)
 
-                if result['success'] and result['decision']['decision'] != 'NONE':
-                    decision = result['decision']
+                decision = result['decision']
+                primary = decision.get('primary_decision', 'NONE')
+
+                if result['success'] and primary != 'NONE':
+                    # Pull the chosen setup (long_setup/short_setup), matching
+                    # the agent's schema and validate_decision's own selection.
+                    chosen = decision['long_setup'] if primary == 'LONG' else decision['short_setup']
                     current_position = {
                         'trade_id': f"{current_bar['DateTime']}",
                         'entry_bar': i,
                         'entry_datetime': current_bar['DateTime'],
-                        'direction': decision['decision'],
-                        'entry': decision['entry'],
-                        'stop': decision['stop'],
-                        'target': decision['target'],
-                        'setup_type': decision['setup_type'],
-                        'confidence': decision['confidence'],
-                        'reasoning': decision['reasoning']
+                        'direction': primary,
+                        'entry': chosen['entry'],
+                        'stop': chosen['stop'],
+                        'target': chosen['target'],
+                        'setup_type': chosen.get('setup_type'),
+                        'confidence': chosen.get('confidence', 0.0),
+                        'reasoning': chosen.get('reasoning', '')
                     }
-                    logger.info(f"Position opened: {decision['decision']} @ {decision['entry']:.2f}")
+                    logger.info(f"Position opened: {current_position['direction']} @ {current_position['entry']:.2f}")
 
             else:
                 # Simple logic for testing (without Claude)
@@ -373,7 +386,10 @@ class BacktestEngine:
                     if abs(current_price - fvg['bottom']) < 100:  # Within 100pts
                         entry = current_price
                         stop = entry - 20
-                        target = fvg['top']
+                        # Target must be ABOVE entry for a LONG. Use the FVG's far
+                        # edge as a profit objective only if it is above entry;
+                        # otherwise fall back to a fixed reward distance.
+                        target = fvg['top'] if fvg['top'] > entry else entry + 40
                         trade_taken = True
                         logger.info(f"Bar {i}: LONG entry - EMA uptrend + bullish FVG target")
 
@@ -396,7 +412,10 @@ class BacktestEngine:
                     if abs(current_price - fvg['top']) < 100:  # Within 100pts
                         entry = current_price
                         stop = entry + 20
-                        target = fvg['bottom']
+                        # Target must be BELOW entry for a SHORT. Use the FVG's far
+                        # edge as a profit objective only if it is below entry;
+                        # otherwise fall back to a fixed reward distance.
+                        target = fvg['bottom'] if fvg['bottom'] < entry else entry - 40
                         logger.info(f"Bar {i}: SHORT entry - EMA downtrend + bearish FVG target")
 
                         current_position = {

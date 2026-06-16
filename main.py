@@ -36,10 +36,12 @@ def setup_logging(log_level: str = "INFO", log_file: str = None):
     handlers = [stdout_handler]
 
     if log_file:
-        log_dir = Path("logs")
-        log_dir.mkdir(exist_ok=True)
+        # log_file may already include a directory (e.g. "logs/trading_agent.log");
+        # honour it as-is and just ensure the parent directory exists.
+        log_path = Path(log_file)
+        log_path.parent.mkdir(parents=True, exist_ok=True)
         # File handler with UTF-8 encoding
-        handlers.append(logging.FileHandler(log_dir / log_file, encoding='utf-8', errors='replace'))
+        handlers.append(logging.FileHandler(log_path, encoding='utf-8', errors='replace'))
 
     logging.basicConfig(
         level=getattr(logging, log_level.upper()),
