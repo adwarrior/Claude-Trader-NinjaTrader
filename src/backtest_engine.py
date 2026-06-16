@@ -349,12 +349,22 @@ class BacktestEngine:
             if use_claude and trading_agent:
                 # Use Claude for decision (full discretion)
                 memory_context = self.memory_manager.get_memory_context()
-                result = trading_agent.analyze_setup(fvg_context, market_data, memory_context)
 
-                decision = result['decision']
+                # A single bar's LLM call can fail (API outage, parse failure).
+                # Skip that bar rather than aborting the whole backtest.
+                try:
+                    result = trading_agent.analyze_setup(fvg_context, market_data, memory_context)
+                except Exception as e:
+                    logger.warning(f"Bar {i}: LLM query failed, skipping ({e})")
+                    continue
+
+                decision = result.get('decision') if result else None
+                if not result or not result.get('success') or not decision:
+                    continue
+
                 primary = decision.get('primary_decision', 'NONE')
 
-                if result['success'] and primary != 'NONE':
+                if primary != 'NONE':
                     # Pull the chosen setup (long_setup/short_setup), matching
                     # the agent's schema and validate_decision's own selection.
                     chosen = decision['long_setup'] if primary == 'LONG' else decision['short_setup']

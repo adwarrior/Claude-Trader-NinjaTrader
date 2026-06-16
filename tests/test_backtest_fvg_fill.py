@@ -98,6 +98,32 @@ def test_simple_logic_levels_bracket_entry_correctly():
             assert t['profit_loss'] < 0, f"stop_loss but P/L {t['profit_loss']}"
 
 
+def test_backtest_survives_llm_failures():
+    """A failing/erroring LLM on some bars must not abort the backtest."""
+    eng = _engine()
+
+    class FlakyAgent:
+        """Alternates between raising, returning an error dict, and NONE."""
+        def __init__(self): self.n = 0
+        def analyze_setup(self, *a, **k):
+            self.n += 1
+            if self.n % 3 == 0:
+                raise RuntimeError("simulated API outage")
+            if self.n % 3 == 1:
+                return {'success': False, 'error': 'parse failed'}  # no 'decision' key
+            return {'success': True, 'decision': {'primary_decision': 'NONE'}}
+
+    import src.backtest_engine as be
+    orig = be.TradingAgent
+    be.TradingAgent = lambda *a, **k: FlakyAgent()
+    try:
+        res = eng.run_backtest(days=10, use_claude=True, api_key='dummy')
+    finally:
+        be.TradingAgent = orig
+    # Should complete and return a valid stats dict (0 trades is fine here)
+    assert 'total_trades' in res and res['total_trades'] == 0
+
+
 if __name__ == '__main__':
     import traceback
     passed = failed = 0
