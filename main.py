@@ -83,7 +83,17 @@ class TradingOrchestrator:
         )
 
         self.memory_manager = MemoryManager()
-        self.signal_generator = SignalGenerator()
+
+        exec_cfg = self.config.get('execution', {})
+        self.signal_generator = SignalGenerator(
+            account=exec_cfg.get('account', 'Sim101'),
+            instrument=exec_cfg.get('instrument', 'NQ 06-26'),
+            quantity=exec_cfg.get('quantity',
+                                  self.config['trading_params'].get('position_size', 1)),
+            host=exec_cfg.get('host', 'localhost'),
+            port=exec_cfg.get('port', 36973),
+            dry_run=exec_cfg.get('dry_run', False),
+        )
         self.analysis_manager = MarketAnalysisManager()
 
         # Trading agent (requires API key)

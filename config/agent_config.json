@@ -25,6 +25,14 @@
     "query_similar_count": 20,
     "enable_adaptive_learning": true
   },
+  "execution": {
+    "account": "Sim101",
+    "instrument": "NQ 06-26",
+    "quantity": 1,
+    "host": "localhost",
+    "port": 36973,
+    "dry_run": true
+  },
   "claude": {
     "model": "claude-sonnet-4-5-20250929",
     "temperature": 0.3,

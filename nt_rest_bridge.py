@@ -21,7 +21,8 @@ Usage:
 """
 
 import socket
-from typing import Literal
+import uuid
+from typing import Literal, Optional
 
 _HOST = "localhost"
 _PORT = 36973
@@ -29,6 +30,11 @@ _PORT = 36973
 
 class NTBridgeError(Exception):
     pass
+
+
+def _oco(oco: "Optional[str]") -> str:
+    """Return the ';OCOID=...' ATI token, or '' when no OCO id is given."""
+    return f";OCOID={oco}" if oco else ""
 
 
 class NTBridge:
@@ -67,11 +73,12 @@ class NTBridge:
         quantity: int,
         limit_price: float,
         tif: str = "DAY",
+        oco: Optional[str] = None,
     ) -> str:
         return self._command(
             f"PLACE;Account={self.account};Instrument={instrument};"
             f"Action={action};Qty={quantity};OrderType=LIMIT;"
-            f"LimitPrice={limit_price};TIF={tif}"
+            f"LimitPrice={limit_price};TIF={tif}" + _oco(oco)
         )
 
     def stop_market_order(
@@ -81,11 +88,12 @@ class NTBridge:
         quantity: int,
         stop_price: float,
         tif: str = "DAY",
+        oco: Optional[str] = None,
     ) -> str:
         return self._command(
             f"PLACE;Account={self.account};Instrument={instrument};"
             f"Action={action};Qty={quantity};OrderType=STOPMARKET;"
-            f"StopPrice={stop_price};TIF={tif}"
+            f"StopPrice={stop_price};TIF={tif}" + _oco(oco)
         )
 
     def cancel_order(self, order_id: str) -> str:
@@ -120,30 +128,29 @@ class NTBridge:
     ) -> dict:
         """
         Submit a market entry followed immediately by a SL stop and TP limit.
-        Returns dict with 'entry', 'sl', 'tp' ATI responses.
+        Returns dict with 'entry', 'sl', 'tp', 'oco' ATI responses.
 
-        NT8 will cancel the orphaned leg when one fills, provided the
-        claudetrader.cs / fvgbot.cs strategy is running on the chart with
-        OCO cancellation enabled — OR use an ATM strategy name instead.
+        The SL and TP share an OCO id, so NinjaTrader cancels the surviving
+        leg server-side the instant either one fills — in BOTH directions
+        (a filled TP cancels the SL, a filled SL cancels the TP). No chart
+        strategy, ATM, or Python watcher is required for the cancellation.
         """
         action = "BUY" if direction in ("LONG", "BUY") else "SELL"
         exit_action = "SELL" if action == "BUY" else "BUY"
 
+        oco = f"oco-{uuid.uuid4().hex[:12]}"
+
         entry = self.market_order(instrument, action, quantity, tif="DAY")
 
-        sl = self._command(
-            f"PLACE;Account={self.account};Instrument={instrument};"
-            f"Action={exit_action};Qty={quantity};OrderType=STOPMARKET;"
-            f"StopPrice={stop_loss};TIF=GTC"
+        sl = self.stop_market_order(
+            instrument, exit_action, quantity, stop_loss, tif="GTC", oco=oco
         )
 
-        tp = self._command(
-            f"PLACE;Account={self.account};Instrument={instrument};"
-            f"Action={exit_action};Qty={quantity};OrderType=LIMIT;"
-            f"LimitPrice={take_profit};TIF=GTC"
+        tp = self.limit_order(
+            instrument, exit_action, quantity, take_profit, tif="GTC", oco=oco
         )
 
-        return {"entry": entry, "sl": sl, "tp": tp}
+        return {"entry": entry, "sl": sl, "tp": tp, "oco": oco}
 
     # ------------------------------------------------------------------
     # Position / account queries (via NtDirect.dll if available,

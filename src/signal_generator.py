@@ -1,67 +1,73 @@
 """
 Signal Generator Module
-Outputs trade signals to CSV for NinjaTrader
+Submits trade signals directly to NinjaTrader 8 via the ATI socket bridge.
+
+No CSV files: signals are sent straight to NT8 over the Automated Trading
+Interface (see nt_rest_bridge.NTBridge). Signal history is kept in memory for
+the dashboard/summary helpers.
+
+The decision dict contract is unchanged and LLM-agnostic — any model that
+produces {decision, entry, stop, target} works here.
 """
 
-import csv
 import logging
-from typing import Dict, Any
+import sys
+from typing import Dict, Any, Optional
 from datetime import datetime
 from pathlib import Path
+
+# nt_rest_bridge.py lives at the project root, one level above src/
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from nt_rest_bridge import NTBridge, NTBridgeError
 
 logger = logging.getLogger(__name__)
 
 
 class SignalGenerator:
-    """Generates trade signals in NinjaTrader CSV format"""
+    """Generates trade signals and submits them to NinjaTrader via ATI."""
 
-    def __init__(self, output_file: str = "data/trade_signals.csv"):
+    def __init__(
+        self,
+        account: str = "Sim101",
+        instrument: str = "NQ 06-26",
+        quantity: int = 1,
+        host: str = "localhost",
+        port: int = 36973,
+        dry_run: bool = False,
+        bridge: Optional[NTBridge] = None,
+    ):
         """
-        Initialize Signal Generator
+        Initialize Signal Generator.
 
         Args:
-            output_file: Path to trade signals CSV file
+            account:    NT8 account name (e.g. "Sim101")
+            instrument: NT8 instrument string (e.g. "NQ 06-26")
+            quantity:   Contracts per trade
+            host/port:  ATI socket endpoint (NT8 default port is 36973)
+            dry_run:    If True, validate and log but do NOT submit orders
+            bridge:     Optional pre-built NTBridge (mainly for testing)
         """
-        self.output_file = Path(output_file)
-        self.output_file.parent.mkdir(exist_ok=True)
+        self.account = account
+        self.instrument = instrument
+        self.quantity = quantity
+        self.dry_run = dry_run
 
-        # Check if header needs fixing
-        needs_init = False
-        if not self.output_file.exists() or self.output_file.stat().st_size == 0:
-            needs_init = True
-        else:
-            # Verify header is correct
-            try:
-                with open(self.output_file, 'r') as f:
-                    header = f.readline().strip()
-                    if header != 'DateTime,Direction,Entry_Price,Stop_Loss,Target':
-                        logger.warning(f"Invalid header detected: {header}")
-                        needs_init = True
-            except Exception:
-                needs_init = True
+        self.bridge = bridge or NTBridge(account=account, host=host, port=port)
 
-        if needs_init:
-            self._initialize_csv()
+        # In-memory signal history (replaces the old CSV log)
+        self._history: list[Dict[str, Any]] = []
 
-        logger.info(f"SignalGenerator initialized (output={self.output_file})")
-
-    def _initialize_csv(self):
-        """Initialize CSV file with headers"""
-        try:
-            with open(self.output_file, 'w', newline='') as f:
-                writer = csv.writer(f)
-                writer.writerow(['DateTime', 'Direction', 'Entry_Price', 'Stop_Loss', 'Target'])
-            logger.info("Trade signals CSV initialized")
-        except Exception as e:
-            logger.error(f"Error initializing CSV: {e}")
-            raise
+        logger.info(
+            f"SignalGenerator initialized (account={account}, "
+            f"instrument={instrument}, qty={quantity}, dry_run={dry_run})"
+        )
 
     def validate_decision(self, decision: Dict[str, Any]) -> tuple[bool, str]:
         """
         Validate decision data before generating signal
 
         Args:
-            decision: Decision dictionary from TradingAgent
+            decision: Decision dictionary from the trading agent
 
         Returns:
             Tuple of (is_valid, error_message)
@@ -132,14 +138,14 @@ class SignalGenerator:
 
     def generate_signal(self, decision: Dict[str, Any], timestamp: datetime = None) -> bool:
         """
-        Generate trade signal and append to CSV
+        Validate a decision and submit it to NinjaTrader as a bracket order.
 
         Args:
-            decision: Decision dictionary from TradingAgent
+            decision:  Decision dictionary from the trading agent
             timestamp: Optional timestamp (defaults to now)
 
         Returns:
-            True if signal generated successfully
+            True if the order was submitted successfully (or accepted in dry_run)
         """
         # Validate decision
         is_valid, error_msg = self.validate_decision(decision)
@@ -147,34 +153,68 @@ class SignalGenerator:
             logger.error(f"Signal validation failed: {error_msg}")
             return False
 
-        # Format timestamp
         if timestamp is None:
             timestamp = datetime.now()
-        time_str = timestamp.strftime('%m/%d/%Y %H:%M:%S')
 
-        # Prepare row data
-        row = [
-            time_str,
-            decision['decision'],
-            f"{decision['entry']:.2f}",
-            f"{decision['stop']:.2f}",
-            f"{decision['target']:.2f}"
-        ]
+        direction = decision['decision']          # "LONG" / "SHORT"
+        entry = decision['entry']
+        stop = decision['stop']
+        target = decision['target']
 
-        # Append to CSV
-        try:
-            with open(self.output_file, 'a', newline='') as f:
-                writer = csv.writer(f)
-                writer.writerow(row)
-
-            logger.info(f"Signal generated: {decision['decision']} @ {decision['entry']:.2f}")
-            logger.info(f"  Stop: {decision['stop']:.2f} | Target: {decision['target']:.2f}")
-
+        if self.dry_run:
+            logger.info(
+                f"[DRY RUN] Would submit {direction} {self.quantity}x {self.instrument} "
+                f"@ {entry:.2f} | SL {stop:.2f} | TP {target:.2f}"
+            )
+            self._record(decision, timestamp, status="dry_run")
             return True
 
-        except Exception as e:
-            logger.error(f"Error writing signal to CSV: {e}")
+        # Submit market entry + SL stop + TP limit via ATI
+        try:
+            responses = self.bridge.bracket_order(
+                instrument=self.instrument,
+                direction=direction,
+                quantity=self.quantity,
+                stop_loss=stop,
+                take_profit=target,
+            )
+
+            logger.info(f"Signal submitted to NT8: {direction} @ {entry:.2f}")
+            logger.info(f"  Stop: {stop:.2f} | Target: {target:.2f} | Qty: {self.quantity}")
+            logger.info(f"  ATI responses: {responses}")
+
+            self._record(decision, timestamp, status="submitted", responses=responses)
+            return True
+
+        except NTBridgeError as e:
+            logger.error(f"Error submitting signal to NT8 ATI: {e}")
             return False
+
+    def close_position(self) -> bool:
+        """Flatten the configured instrument and cancel its working orders."""
+        if self.dry_run:
+            logger.info(f"[DRY RUN] Would close position on {self.instrument}")
+            return True
+        try:
+            resp = self.bridge.close_position(self.instrument)
+            logger.info(f"Close position on {self.instrument}: {resp}")
+            return True
+        except NTBridgeError as e:
+            logger.error(f"Error closing position: {e}")
+            return False
+
+    def _record(self, decision: Dict[str, Any], timestamp: datetime,
+                status: str, responses: Any = None) -> None:
+        """Append a submitted signal to the in-memory history."""
+        self._history.append({
+            'DateTime': timestamp.strftime('%m/%d/%Y %H:%M:%S'),
+            'Direction': decision['decision'],
+            'Entry_Price': f"{decision['entry']:.2f}",
+            'Stop_Loss': f"{decision['stop']:.2f}",
+            'Target': f"{decision['target']:.2f}",
+            'Status': status,
+            'Responses': responses,
+        })
 
     def get_signal_summary(self, decision: Dict[str, Any]) -> str:
         """
@@ -224,7 +264,7 @@ class SignalGenerator:
         if 'reasoning' in decision and decision['reasoning']:
             lines.append(f"\nReasoning: {decision['reasoning']}")
 
-        lines.append(f"\nSignal written to: {self.output_file}")
+        lines.append(f"\nSignal routed to NT8: {self.instrument} (account {self.account})")
 
         return "\n".join(lines)
 
@@ -236,19 +276,7 @@ class SignalGenerator:
             Number of signals today
         """
         today = datetime.now().strftime('%m/%d/%Y')
-        count = 0
-
-        try:
-            with open(self.output_file, 'r') as f:
-                reader = csv.DictReader(f)
-                for row in reader:
-                    if row['DateTime'].startswith(today):
-                        count += 1
-        except Exception as e:
-            logger.error(f"Error counting signals: {e}")
-            return 0
-
-        return count
+        return sum(1 for s in self._history if s['DateTime'].startswith(today))
 
     def get_recent_signals(self, limit: int = 10) -> list:
         """
@@ -260,30 +288,25 @@ class SignalGenerator:
         Returns:
             List of signal dictionaries
         """
-        signals = []
-
-        try:
-            with open(self.output_file, 'r') as f:
-                reader = csv.DictReader(f)
-                all_signals = list(reader)
-                signals = all_signals[-limit:] if len(all_signals) > limit else all_signals
-        except Exception as e:
-            logger.error(f"Error reading signals: {e}")
-            return []
-
-        return signals
+        return self._history[-limit:] if len(self._history) > limit else list(self._history)
 
     def clear_signals(self):
-        """Clear all signals (reinitialize CSV)"""
-        self._initialize_csv()
-        logger.info("Trade signals cleared")
+        """Clear in-memory signal history."""
+        self._history.clear()
+        logger.info("Trade signal history cleared")
 
 
 # Example usage
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
-    generator = SignalGenerator("data/trade_signals.csv")
+    # dry_run avoids needing a live NT8 connection for the smoke test
+    generator = SignalGenerator(
+        account="Sim101",
+        instrument="NQ 06-26",
+        quantity=1,
+        dry_run=True,
+    )
 
     # Sample decision
     sample_decision = {
@@ -301,3 +324,4 @@ if __name__ == "__main__":
     if success:
         print(generator.get_signal_summary(sample_decision))
         print(f"\nSignals today: {generator.count_signals_today()}")
+        print(f"Recent: {generator.get_recent_signals()}")
