@@ -1,7 +1,8 @@
 # MNQ Claude Trading Bot - Dependencies
 
 # Core dependencies
-anthropic>=0.40.0          # Claude AI API
+openai>=1.40.0             # OpenAI-compatible LLM client (Nous/Nemotron, OpenAI, OpenRouter, local)
+anthropic>=0.40.0          # optional — only if pointing back at the Anthropic SDK
 pandas>=2.0.0              # Data manipulation
 numpy>=1.24.0              # Numerical computations
 python-dotenv>=1.0.0       # Environment variable management

@@ -1,38 +1,57 @@
 """
-Claude Trading Agent Module
-Main reasoning engine for NQ trading decisions
+Trading Agent Module
+Main reasoning engine for NQ trading decisions.
+
+LLM-agnostic: talks to any OpenAI-compatible chat-completions endpoint
+(Nous Research / Nemotron, OpenAI, OpenRouter, local Ollama/LM Studio, ...).
+Endpoint, model id and key-env are read from the `llm` config block.
 """
 
 import json
 import logging
+import re
 from typing import Dict, Optional, Any
 from datetime import datetime
 import os
 import time
-from anthropic import Anthropic, APIError
+from openai import OpenAI, APIError
 
 logger = logging.getLogger(__name__)
 
 
 class TradingAgent:
-    """Claude-powered trading decision engine"""
+    """LLM-powered trading decision engine (OpenAI-compatible API)."""
 
     def __init__(self, config: Dict[str, Any], api_key: Optional[str] = None):
         """
         Initialize Trading Agent
 
         Args:
-            config: Configuration dictionary with trading parameters
-            api_key: Anthropic API key (or from environment)
+            config: Configuration dictionary with trading parameters.
+                    The `llm` block selects the provider:
+                      base_url    - OpenAI-compatible endpoint
+                      model       - exact model id
+                      api_key_env - env var holding the API key
+            api_key: Explicit API key (overrides the env var)
         """
         self.config = config
-        self.api_key = api_key or os.getenv('ANTHROPIC_API_KEY')
+
+        llm_cfg = config.get('llm', {})
+        self.base_url = llm_cfg.get('base_url', 'https://inference-api.nousresearch.com/v1')
+        self.model = llm_cfg.get('model', 'nvidia/nemotron-3-ultra:free')
+        self.temperature = llm_cfg.get('temperature', 0.3)
+        self.max_tokens = llm_cfg.get('max_tokens', 8192)
+        key_env = llm_cfg.get('api_key_env', 'NOUS_API_KEY')
+
+        # Back-compat: fall back to ANTHROPIC_API_KEY if the configured var is unset
+        self.api_key = api_key or os.getenv(key_env) or os.getenv('ANTHROPIC_API_KEY')
 
         if not self.api_key:
-            raise ValueError("Anthropic API key required (set ANTHROPIC_API_KEY or pass api_key)")
+            raise ValueError(
+                f"LLM API key required (set {key_env} in the environment or pass api_key)"
+            )
 
-        self.client = Anthropic(api_key=self.api_key)
-        self.model = "claude-sonnet-4-5-20250929"
+        self.client = OpenAI(api_key=self.api_key, base_url=self.base_url)
 
         # Extract config parameters
         self.min_risk_reward = config.get('trading_params', {}).get('min_risk_reward', 3.0)
@@ -42,7 +61,8 @@ class TradingAgent:
         self.stop_loss_max = config.get('risk_management', {}).get('stop_loss_max', 50)
         self.stop_buffer = config.get('risk_management', {}).get('stop_buffer', 5)
 
-        logger.info(f"TradingAgent initialized (model={self.model}, min_rr={self.min_risk_reward})")
+        logger.info(f"TradingAgent initialized (model={self.model}, "
+                    f"base_url={self.base_url}, min_rr={self.min_risk_reward})")
 
     def _find_psychological_levels(self, current_price: float, interval: int = 100) -> Dict[str, float]:
         """
@@ -70,31 +90,31 @@ class TradingAgent:
             'below': level_below
         }
 
-    def query_claude_with_retry(self, prompt: str, max_retries: int = 5) -> Dict[str, Any]:
+    def query_llm_with_retry(self, prompt: str, max_retries: int = 5) -> str:
         """
-        Query Claude API with exponential backoff retry logic
+        Query the LLM (OpenAI-compatible) with exponential backoff retry.
 
         Args:
             prompt: The prompt to send
             max_retries: Maximum number of retry attempts
 
         Returns:
-            API response or raises exception after all retries
+            The model's response text, or raises after all retries
         """
         base_delay = 2  # Start with 2 second delay
 
         for attempt in range(max_retries):
             try:
-                response = self.client.messages.create(
+                response = self.client.chat.completions.create(
                     model=self.model,
-                    max_tokens=8192,  # Increased to handle full JSON response with detailed reasoning
-                    temperature=0.3,
+                    max_tokens=self.max_tokens,
+                    temperature=self.temperature,
                     messages=[{
                         "role": "user",
                         "content": prompt
                     }]
                 )
-                return response
+                return response.choices[0].message.content
 
             except APIError as e:
                 error_message = str(e)
@@ -462,25 +482,64 @@ Only set primary_decision to LONG/SHORT if the corresponding assessment status i
 
         return prompt
 
+    def _extract_json(self, response_text: str) -> Optional[Dict[str, Any]]:
+        """
+        Tolerantly extract a JSON object from a model response.
+
+        Required for models without guaranteed JSON mode (e.g.
+        nvidia/nemotron-3-ultra:free), which wrap JSON in prose or fences.
+        Tries, in order: markdown ```json fence, any ``` fence, then the
+        first balanced {...} object found by brace-matching.
+        """
+        text = response_text.strip()
+
+        candidates = []
+        if '```json' in text:
+            candidates.append(text.split('```json', 1)[1].split('```', 1)[0].strip())
+        if '```' in text:
+            candidates.append(text.split('```', 1)[1].split('```', 1)[0].strip())
+        candidates.append(text)  # raw, in case it's already clean JSON
+
+        for cand in candidates:
+            try:
+                return json.loads(cand)
+            except (json.JSONDecodeError, ValueError):
+                continue
+
+        # Last resort: scan for the first balanced top-level {...} object
+        start = text.find('{')
+        while start != -1:
+            depth = 0
+            for i in range(start, len(text)):
+                if text[i] == '{':
+                    depth += 1
+                elif text[i] == '}':
+                    depth -= 1
+                    if depth == 0:
+                        try:
+                            return json.loads(text[start:i + 1])
+                        except (json.JSONDecodeError, ValueError):
+                            break  # malformed; try the next '{'
+            start = text.find('{', start + 1)
+
+        return None
+
     def parse_claude_response(self, response_text: str) -> Optional[Dict[str, Any]]:
         """
-        Parse Claude's JSON response
+        Parse the model's JSON response into a decision dict.
 
         Args:
-            response_text: Raw response text from Claude
+            response_text: Raw response text from the model
 
         Returns:
             Parsed decision dictionary or None if parsing fails
         """
         try:
-            # Extract JSON from response (handle markdown code blocks)
-            text = response_text.strip()
-            if '```json' in text:
-                text = text.split('```json')[1].split('```')[0].strip()
-            elif '```' in text:
-                text = text.split('```')[1].split('```')[0].strip()
-
-            decision = json.loads(text)
+            decision = self._extract_json(response_text)
+            if decision is None:
+                logger.error("No JSON object found in model response")
+                logger.error(f"Response text: {response_text[:500]}")
+                return None
 
             # AUTO-CONVERT: If agent returned new format but not old format, convert automatically
             if 'long_assessment' in decision and 'short_assessment' in decision:
@@ -652,16 +711,13 @@ Only set primary_decision to LONG/SHORT if the corresponding assessment status i
             anim_thread = threading.Thread(target=animate_dots, daemon=True)
             anim_thread.start()
 
-            # Query Claude with retry logic
-            response = self.query_claude_with_retry(prompt, max_retries=5)
+            # Query the LLM with retry logic (returns response text directly)
+            response_text = self.query_llm_with_retry(prompt, max_retries=5)
 
             # Stop animation
             waiting = False
             time.sleep(0.1)  # Let animation thread finish
             print('\r' + ' ' * 40 + '\r', end='', flush=True)  # Clear line
-
-            # Extract response text
-            response_text = response.content[0].text
 
             # Show full response
             logger.info("="*60)

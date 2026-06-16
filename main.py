@@ -96,13 +96,14 @@ class TradingOrchestrator:
         )
         self.analysis_manager = MarketAnalysisManager()
 
-        # Trading agent (requires API key)
-        api_key = os.getenv('ANTHROPIC_API_KEY')
+        # Trading agent (requires LLM API key from the env var named in llm config)
+        key_env = self.config.get('llm', {}).get('api_key_env', 'NOUS_API_KEY')
+        api_key = os.getenv(key_env) or os.getenv('ANTHROPIC_API_KEY')
         if api_key:
             self.trading_agent = TradingAgent(self.config, api_key=api_key)
         else:
             self.trading_agent = None
-            logger.warning("No API key found - trading agent not initialized")
+            logger.warning(f"No API key found (set {key_env}) - trading agent not initialized")
 
         # State tracking
         self.daily_trades = 0
@@ -378,11 +379,12 @@ class TradingOrchestrator:
         """
         logger.info(f"Starting BACKTEST mode ({days} days)")
 
-        api_key = os.getenv('ANTHROPIC_API_KEY')
+        key_env = self.config.get('llm', {}).get('api_key_env', 'NOUS_API_KEY')
+        api_key = os.getenv(key_env) or os.getenv('ANTHROPIC_API_KEY')
         use_claude = api_key is not None
 
         if not use_claude:
-            logger.warning("No API key - running backtest with simple logic")
+            logger.warning(f"No API key (set {key_env}) - running backtest with simple logic")
 
         engine = BacktestEngine(self.config)
         results = engine.run_backtest(days=days, use_claude=use_claude, api_key=api_key)
