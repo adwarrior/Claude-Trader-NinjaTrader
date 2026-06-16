@@ -726,9 +726,6 @@ Only set primary_decision to LONG/SHORT if the corresponding assessment status i
             logger.info(response_text)
             logger.info("="*60)
 
-            # Wait 1 second before continuing
-            time.sleep(1)
-
             # Parse response
             decision = self.parse_claude_response(response_text)
 
