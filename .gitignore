@@ -33,10 +33,10 @@ env/
 logs/
 *.log
 
-# Data files (if sensitive)
-# Uncomment if you don't want to commit data files
-# data/*.csv
-# !data/.gitkeep
+# Data files - live/regenerable feeds, don't commit (churn every tick)
+data/*.csv
+data/*.csv:Zone.Identifier
+!data/.gitkeep
 
 # IDE
 .vscode/
