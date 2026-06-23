@@ -27,7 +27,7 @@
   },
   "execution": {
     "account": "Sim101",
-    "instrument": "NQ 06-26",
+    "instrument": "NQ 09-26",
     "quantity": 1,
     "host": "localhost",
     "port": 36973,

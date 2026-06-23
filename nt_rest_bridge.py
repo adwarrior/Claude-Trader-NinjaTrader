@@ -1,57 +1,61 @@
 """
-NT8 ATI Bridge
+NT8 OIF Bridge
 ==============
-Submits orders to NinjaTrader 8 via the built-in Automated Trading Interface
-(ATI) TCP socket. No CSV files, no polling, no add-ons required.
+Submits orders to NinjaTrader 8 via the documented Order Instruction File (OIF)
+interface: write a uniquely-named `oif*.txt` into NT8's `incoming` folder and
+NT processes it immediately, then deletes it.
+
+  Operations > Automated Trading > ATI > File Interface > Order Instruction Files
 
 NT8 setup (one-time):
-  Tools → Options → Automated Trading Interface
-    ✓ AT Interface enabled
-    Port: 36973 (default)
+  Tools → Options → Automated Trading Interface → ✓ AT Interface enabled
+  The incoming folder is:  <Documents>/NinjaTrader 8/incoming
+
+Why files, not the socket: NT8's ATI socket (port 36973) is a state/data stream,
+NOT an order-entry channel — sending PLACE to it does nothing. Orders MUST go
+through OIF files (or the NtDirect DLL). Verified empirically + per the help guide.
+
+Documented PLACE field order (semicolon-delimited, positional):
+  PLACE;<ACCOUNT>;<INSTRUMENT>;<ACTION>;<QTY>;<ORDERTYPE>;[LIMIT];[STOP];
+        <TIF>;[OCOID];[ORDERID];[STRATEGY];[STRATEGYID]
 
 Usage:
     from nt_rest_bridge import NTBridge, NTBridgeError
 
-    nt = NTBridge(account="Sim101")
-    nt.market_order("NQ 06-26", "BUY",  1)
-    nt.market_order("NQ 06-26", "SELL", 1)
-    nt.bracket_order("NQ 06-26", "LONG", qty=1, stop_loss=18200.0, take_profit=18300.0)
-    nt.close_position("NQ 06-26")
-    pos = nt.get_position("NQ 06-26")   # "long" / "short" / "flat"
+    nt = NTBridge(account="Sim101")              # auto-detects incoming dir
+    nt.market_order("NQ 09-26", "BUY", 1)
+    nt.bracket_order("NQ 09-26", "LONG", qty=1, stop_loss=18200.0, take_profit=18300.0)
+    nt.close_position("NQ 09-26")
 """
 
-import socket
+import os
 import uuid
+from pathlib import Path
 from typing import Literal, Optional
 
-_HOST = "localhost"
-_PORT = 36973
+# Default NT8 incoming folder on Windows (under the user's Documents).
+def _default_incoming_dir() -> str:
+    return str(Path.home() / "Documents" / "NinjaTrader 8" / "incoming")
 
 
 class NTBridgeError(Exception):
     pass
 
 
-def _oco(oco: "Optional[str]") -> str:
-    """Return the ';OCOID=...' ATI token, or '' when no OCO id is given."""
-    return f";OCOID={oco}" if oco else ""
-
-
 class NTBridge:
     def __init__(
         self,
         account: str,
-        host: str = _HOST,
-        port: int = _PORT,
-        timeout: float = 5.0,
+        host: str = "localhost",      # kept for config compatibility (unused by OIF)
+        port: int = 36973,            # kept for config compatibility (unused by OIF)
+        timeout: float = 5.0,         # kept for config compatibility (unused by OIF)
+        incoming_dir: Optional[str] = None,
     ):
         self.account = account
-        self.host    = host
-        self.port    = port
-        self.timeout = timeout
+        self.incoming_dir = Path(incoming_dir or _default_incoming_dir())
 
     # ------------------------------------------------------------------
-    # Orders
+    # Orders  (field order per the documented OIF PLACE format)
     # ------------------------------------------------------------------
 
     def market_order(
@@ -61,10 +65,7 @@ class NTBridge:
         quantity: int,
         tif: str = "DAY",
     ) -> str:
-        return self._command(
-            f"PLACE;Account={self.account};Instrument={instrument};"
-            f"Action={action};Qty={quantity};OrderType=MARKET;TIF={tif}"
-        )
+        return self._place(instrument, action, quantity, "MARKET", tif=tif)
 
     def limit_order(
         self,
@@ -75,11 +76,8 @@ class NTBridge:
         tif: str = "DAY",
         oco: Optional[str] = None,
     ) -> str:
-        return self._command(
-            f"PLACE;Account={self.account};Instrument={instrument};"
-            f"Action={action};Qty={quantity};OrderType=LIMIT;"
-            f"LimitPrice={limit_price};TIF={tif}" + _oco(oco)
-        )
+        return self._place(instrument, action, quantity, "LIMIT",
+                           limit=limit_price, tif=tif, oco=oco)
 
     def stop_market_order(
         self,
@@ -90,29 +88,40 @@ class NTBridge:
         tif: str = "DAY",
         oco: Optional[str] = None,
     ) -> str:
-        return self._command(
-            f"PLACE;Account={self.account};Instrument={instrument};"
-            f"Action={action};Qty={quantity};OrderType=STOPMARKET;"
-            f"StopPrice={stop_price};TIF={tif}" + _oco(oco)
+        return self._place(instrument, action, quantity, "STOPMARKET",
+                           stop=stop_price, tif=tif, oco=oco)
+
+    def _place(
+        self,
+        instrument: str,
+        action: str,
+        quantity: int,
+        order_type: str,
+        limit: float = 0,
+        stop: float = 0,
+        tif: str = "DAY",
+        oco: str = "",
+        order_id: str = "",
+    ) -> str:
+        # PLACE;ACCOUNT;INSTRUMENT;ACTION;QTY;ORDERTYPE;LIMIT;STOP;TIF;OCO;ORDERID;STRATEGY;STRATEGYID
+        cmd = (
+            f"PLACE;{self.account};{instrument};{action};{quantity};{order_type};"
+            f"{limit};{stop};{tif};{oco or ''};{order_id or ''};;"
         )
+        return self._write_oif(cmd)
 
     def cancel_order(self, order_id: str) -> str:
-        return self._command(f"CANCEL;OrderId={order_id}")
-
-    def cancel_all_orders(self, instrument: str) -> str:
-        return self._command(
-            f"CANCELALLORDERS;Account={self.account};Instrument={instrument}"
-        )
+        # CANCEL;;;;;;;;;;ORDERID;;STRATEGYID
+        return self._write_oif(f"CANCEL;;;;;;;;;;{order_id};;")
 
     def close_position(self, instrument: str) -> str:
-        """Flatten position and cancel all working orders for this instrument."""
-        return self._command(
-            f"CLOSEPOSITION;Account={self.account};Instrument={instrument}"
-        )
+        """Flatten position for this instrument (CLOSEPOSITION)."""
+        # CLOSEPOSITION;ACCOUNT;INSTRUMENT;;;;;;;;;;
+        return self._write_oif(f"CLOSEPOSITION;{self.account};{instrument};;;;;;;;;;")
 
     def flatten_everything(self) -> str:
         """Flatten ALL positions and cancel ALL orders on the account."""
-        return self._command(f"FLATTENEVERYTHING;Account={self.account}")
+        return self._write_oif("FLATTENEVERYTHING;;;;;;;;;;;;")
 
     # ------------------------------------------------------------------
     # Convenience: entry + bracket
@@ -127,90 +136,62 @@ class NTBridge:
         take_profit: float,
     ) -> dict:
         """
-        Submit a market entry followed immediately by a SL stop and TP limit.
-        Returns dict with 'entry', 'sl', 'tp', 'oco' ATI responses.
-
-        The SL and TP share an OCO id, so NinjaTrader cancels the surviving
-        leg server-side the instant either one fills — in BOTH directions
-        (a filled TP cancels the SL, a filled SL cancels the TP). No chart
-        strategy, ATM, or Python watcher is required for the cancellation.
+        Market entry + SL stop + TP limit. The SL and TP share an OCO id so NT
+        cancels the surviving leg when either fills (both directions).
         """
         action = "BUY" if direction in ("LONG", "BUY") else "SELL"
         exit_action = "SELL" if action == "BUY" else "BUY"
-
         oco = f"oco-{uuid.uuid4().hex[:12]}"
 
         entry = self.market_order(instrument, action, quantity, tif="DAY")
-
-        sl = self.stop_market_order(
-            instrument, exit_action, quantity, stop_loss, tif="GTC", oco=oco
-        )
-
-        tp = self.limit_order(
-            instrument, exit_action, quantity, take_profit, tif="GTC", oco=oco
-        )
-
+        sl = self.stop_market_order(instrument, exit_action, quantity, stop_loss, tif="GTC", oco=oco)
+        tp = self.limit_order(instrument, exit_action, quantity, take_profit, tif="GTC", oco=oco)
         return {"entry": entry, "sl": sl, "tp": tp, "oco": oco}
 
     # ------------------------------------------------------------------
-    # Position / account queries (via NtDirect.dll if available,
-    # otherwise ATI socket returns position state)
+    # Internal: write the OIF file
     # ------------------------------------------------------------------
 
-    def get_position(self, instrument: str) -> str:
+    def _write_oif(self, line: str) -> str:
         """
-        Returns the raw ATI response string, e.g. 'long', 'short', or 'flat'.
-        Requires NtDirect.dll for richer data — see nt_direct_queries.py.
+        Write a single instruction line to a uniquely-named oif*.txt in the
+        incoming folder. NT processes and deletes it. Write directly into the
+        folder (not copy) to avoid the file-locking issue the docs warn about.
         """
-        return self._command(
-            f"MARKETPOSITION;Account={self.account};Instrument={instrument}"
-        )
-
-    # ------------------------------------------------------------------
-    # Internal
-    # ------------------------------------------------------------------
-
-    def _command(self, cmd: str) -> str:
-        """Send a single ATI command, return the response string."""
-        msg = (cmd + "\r\n").encode("ascii")
-        try:
-            with socket.create_connection((self.host, self.port), timeout=self.timeout) as s:
-                s.sendall(msg)
-                # ATI sends a short status response then closes the connection
-                chunks = []
-                while True:
-                    chunk = s.recv(4096)
-                    if not chunk:
-                        break
-                    chunks.append(chunk)
-                response = b"".join(chunks).decode("ascii").strip()
-                return response
-        except ConnectionRefusedError:
+        if not self.incoming_dir.exists():
             raise NTBridgeError(
-                f"Cannot connect to NT8 ATI on {self.host}:{self.port}. "
-                "Is NinjaTrader running with ATI enabled? "
+                f"NT8 incoming folder not found: {self.incoming_dir}\n"
+                "Is NinjaTrader installed and the AT Interface enabled? "
                 "(Tools → Options → Automated Trading Interface)"
             )
+        fname = f"oif_{uuid.uuid4().hex}.txt"
+        path = self.incoming_dir / fname
+        try:
+            # Write atomically-ish: NT polls the folder, so write the full
+            # content in one go directly into the watched folder.
+            with open(path, "w", encoding="ascii", newline="\r\n") as f:
+                f.write(line + "\r\n")
+            return f"OIF written: {fname}"
         except OSError as e:
-            raise NTBridgeError(f"NT8 ATI socket error: {e}") from e
+            raise NTBridgeError(f"Failed to write OIF file {path}: {e}") from e
 
 
 # ------------------------------------------------------------------
 # Smoke-test  (python nt_rest_bridge.py)
 # ------------------------------------------------------------------
 if __name__ == "__main__":
-    nt = NTBridge(account="Sim101")
+    import sys
 
-    print("Testing connection to NT8 ATI...")
-    try:
-        response = nt.get_position("NQ 06-26")
-        print(f"Position response: {response!r}")
-        print("Connection OK.")
-    except NTBridgeError as e:
-        print(f"FAILED: {e}")
-        print()
-        print("Steps to enable ATI in NinjaTrader 8:")
-        print("  1. Tools → Options → Automated Trading Interface")
-        print("  2. Check 'AT Interface enabled'")
-        print("  3. Port should be 36973")
-        print("  4. Click OK and restart NinjaTrader if prompted")
+    nt = NTBridge(account="Sim101")
+    print(f"Incoming folder: {nt.incoming_dir}")
+    print(f"Folder exists:   {nt.incoming_dir.exists()}")
+
+    if "--place" in sys.argv:
+        # Live test: places 1 contract MARKET BUY on Sim101. Flatten after!
+        instrument = "NQ 09-26"
+        print(f"Placing TEST market BUY: 1 {instrument} on Sim101 ...")
+        print(nt.market_order(instrument, "BUY", 1))
+        print("Check NT Orders/Positions tab. Flatten the test position when done.")
+    else:
+        print("Dry check only. Re-run with --place to send a 1-contract test order:")
+        print("    python nt_rest_bridge.py --place")

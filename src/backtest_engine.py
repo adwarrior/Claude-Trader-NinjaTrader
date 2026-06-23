@@ -67,7 +67,8 @@ class BacktestEngine:
         logger.info(f"Loading historical data from {self.historical_data_path}")
 
         df = pd.read_csv(self.historical_data_path)
-        df['DateTime'] = pd.to_datetime(df['DateTime'])
+        # 'mixed' handles both NT's ISO timestamps and older US-format rows.
+        df['DateTime'] = pd.to_datetime(df['DateTime'], format='mixed')
         df = df.sort_values('DateTime').reset_index(drop=True)
 
         if days:

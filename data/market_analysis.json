@@ -1,7 +1,7 @@
 {
-  "current_bar_index": 1,
-  "overall_bias": "bearish",
-  "waiting_for": "SHORT SETUP EVOLVED - Previous target (25303-25324 FVG) was FILLED as price dropped to 25319.75. New fresh bullish FVG formed at 25094-25112 (220pts below). Monitoring for continuation setup or waiting for price stabilization before next move.",
+  "current_bar_index": 3,
+  "overall_bias": "neutral",
+  "waiting_for": "Price to stabilize after massive 289-point counter-trend surge; need clear setup formation - either mean reversion short setup if price rejects near 30700/30800, or trend-following long if EMAs begin turning up with pullback support",
   "long_assessment": {
     "status": "none",
     "setup_type": null,
@@ -11,20 +11,21 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "NO LONG SETUP - Price dropped another 102.5pts from 25422 to 25319.75, continuing the bearish momentum we identified. The previous bullish FVG at 25303-25324 has been FILLED (price at 25319.75 is within that zone), which validates our short thesis perfectly. However, this also means the magnetic pull is satisfied. Bearish FVG above at 25509-25550 is now 225pts away - too distant for quality entry (would require chasing 225pts up). Price is now BELOW EMA21 (25366.57) by 46.82pts, confirming bearish structure shift. Stochastic at 79.41 still elevated but dropping from 80.95. While trend remains bullish (EMA21>75>150), price action is bearish. Would need to see: (1) price stabilize and form base near current levels, (2) stochastic drop below 50 and turn up, (3) bullish rejection candle from support zone before considering longs. Currently in no-man's land between filled FVG and distant resistance."
+    "reasoning": "NO LONG SETUP - Price exploded 289 points above all EMAs (EMA21 30397, EMA75 30406, EMA150 30417) in a single bar, creating massive extension. While bearish FVG above at 30791-30805 (105 pts away) and psychological 30700 (4.75 pts) could attract price higher, trading long against bearish EMA alignment with price this extended is chasing. Stochastic at 60 has room but no oversold bounce catalyst. Risk of sharp mean reversion to EMAs is high. No defined risk level with reasonable R/R."
   },
   "short_assessment": {
-    "status": "waiting",
-    "setup_type": "FVG_FILL",
-    "entry_plan": 25319.75,
-    "stop_plan": 25370.0,
-    "raw_target": 25094.25,
-    "target_plan": 25099.25,
-    "risk_reward": 4.39,
-    "confidence": 0.7,
-    "reasoning": "SETUP MONITORING - Previous short setup EXECUTED PERFECTLY. Price dropped 102.5pts from 25422 to 25319.75, filling the bullish FVG at 25303-25324 we targeted. NEW FRESH BULLISH FVG formed at 25094-25112 (0 bars old), now 220pts below. CONFLUENCE FACTORS: (1) Momentum continuation - 200pt drop over 2 bars shows strong bearish commitment. (2) Price broke BELOW EMA21 (25366.57) for first time, confirming trend shift from pullback to reversal. (3) Stochastic at 79.41 still elevated, supporting further downside. (4) Psychological level 25300 just 19.75pts below - likely to break given momentum. (5) Fresh FVG at 25094-25112 provides clear magnetic target. RISK/REWARD: Entry 25319.75, Raw Target 25094.25, Final Target 25099.25 (with 5pt buffer) = 220.5pt potential. Stop 25370.00 (50.25pts above entry, positioned above EMA21 resistance) = 4.39:1 R/R - EXCEPTIONAL. CONCERN: 220pt target is VERY ambitious in single move. Price may consolidate or bounce before reaching. Setting status to WAITING rather than READY because: (1) Just filled previous FVG - may see temporary bounce/consolidation, (2) 220pt distance suggests this could be multi-leg move requiring patience, (3) Stochastic still elevated - prefer to see it drop below 70 for confirmation. IDEAL SCENARIO: Wait for minor bounce to 25340-25360 zone (retest of EMA21/broken support) for better entry, OR wait 1-2 bars to confirm continuation momentum before entering at current levels."
+    "status": "none",
+    "setup_type": null,
+    "entry_plan": null,
+    "stop_plan": null,
+    "raw_target": null,
+    "target_plan": null,
+    "risk_reward": null,
+    "confidence": 0.0,
+    "reasoning": "NO SHORT SETUP - Previous short setup (waiting for break below 30400/EMA rejection) is COMPLETELY INVALIDATED by 289-point surge to 30695. EMAs still bearish aligned but price is 288+ points above them - shorting this parabolic extension risks 'catching a rocket.' Nearest bullish FVG target at 30373 is 317 points away (too far for practical target). No nearby bearish FVG to target for a short (nearest is 105 pts ABOVE at 30791). Psychological 30700 just 4.75 pts away could trigger more shorts but also squeeze higher. Need price to stabilize and form a proper rejection pattern before considering mean reversion short.",
+    "setup_age_bars": 2
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 1,
-  "last_updated": "2025-11-30T19:24:57.849233"
+  "bars_since_last_trade": 3,
+  "last_updated": "2026-06-18T17:45:00.058601"
 }

@@ -168,11 +168,23 @@ class TradingOrchestrator:
         last_bar_time = None
         last_result = None
 
+        # Stale-feed guard: HistoricalData.csv should advance once per bar interval.
+        # If it stops (NT SecondHistoricalData blocked by its 150-bar warmup gate,
+        # chart closed, wrong data folder, etc.) the loop would otherwise silently
+        # replay the last setup forever and look like it "found one setup and stopped".
+        # Warn loudly and stop presenting the stale decision as if it were live.
+        stale_feed_minutes = self.config.get('monitoring', {}).get('stale_feed_minutes', 90)
+        last_new_bar_wallclock = time.time()
+        last_stale_warning_wallclock = 0.0
+
         try:
             while True:
                 # Reload historical data to check for updates
                 historical_df = pd.read_csv('data/HistoricalData.csv')
-                historical_df['DateTime'] = pd.to_datetime(historical_df['DateTime'])
+                # NT writes ISO timestamps (2026-06-11 20:37:00) while older
+                # recorded rows use US format (06/11/2026 20:37:00); 'mixed'
+                # infers each row so both parse.
+                historical_df['DateTime'] = pd.to_datetime(historical_df['DateTime'], format='mixed')
 
                 # Get latest bar timestamp
                 current_bar_time = historical_df.iloc[-1]['DateTime']
@@ -186,6 +198,7 @@ class TradingOrchestrator:
 
                     # Update last processed time
                     last_bar_time = current_bar_time
+                    last_new_bar_wallclock = time.time()
 
                     # Check for new hourly bars
                     if fvg_display.check_historical_updated():
@@ -351,15 +364,42 @@ class TradingOrchestrator:
                     # WAITING FOR NEW BAR - Show live updates
                     current_price = fvg_display.read_current_price()
 
+                    # Stale-feed detection: minutes since HistoricalData.csv last advanced.
+                    stale_minutes = (time.time() - last_new_bar_wallclock) / 60.0
+                    feed_stale = stale_minutes >= stale_feed_minutes
+
                     # Clear screen
                     os.system('cls' if os.name == 'nt' else 'clear')
 
-                    # Show last decision with current price
-                    if last_result:
-                        print(self.trading_agent.format_decision_display(last_result, current_price))
+                    if feed_stale:
+                        # Throttle the WARNING log to once/min so it's loud in the log
+                        # file without spamming on every 5s refresh.
+                        if time.time() - last_stale_warning_wallclock >= 60:
+                            logger.warning(
+                                f"STALE FEED: HistoricalData.csv has not advanced for "
+                                f"{stale_minutes:.0f} min (last bar {last_bar_time}). "
+                                f"Analysis is PAUSED - check the NinjaTrader SecondHistoricalData "
+                                f"strategy (150-bar warmup gate / chart Days-to-load / data path)."
+                            )
+                            last_stale_warning_wallclock = time.time()
 
-                    # Static waiting message
-                    print("\nWaiting for next bar")
+                        # Do NOT replay the old decision as if it were live - show a
+                        # stale banner so a frozen feed can't masquerade as one setup.
+                        print("=" * 60)
+                        print("  /!\\  STALE DATA FEED - analysis paused")
+                        print(f"  HistoricalData.csv last advanced {stale_minutes:.0f} min ago")
+                        print(f"  Last bar: {last_bar_time}")
+                        if current_price is not None:
+                            print(f"  Live price (LiveFeed.csv): {current_price:.2f}")
+                        print("  Fix the NinjaTrader SecondHistoricalData feed, then restart.")
+                        print("=" * 60)
+                    else:
+                        # Show last decision with current price
+                        if last_result:
+                            print(self.trading_agent.format_decision_display(last_result, current_price))
+
+                        # Static waiting message
+                        print("\nWaiting for next bar")
 
                     # Wait 5 seconds before refreshing
                     time.sleep(5)

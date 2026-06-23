@@ -55,7 +55,7 @@ class FVGDisplay:
                 self.instrument = df['Instrument'].iloc[-1]
                 logger.info(f"Auto-detected instrument: {self.instrument}")
 
-            df['DateTime'] = pd.to_datetime(df['DateTime'])
+            df['DateTime'] = pd.to_datetime(df['DateTime'], format='mixed')
             df = df.sort_values('DateTime').reset_index(drop=True)
             return df
         except Exception as e:
