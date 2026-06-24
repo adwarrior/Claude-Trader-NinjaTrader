@@ -430,8 +430,25 @@ You MUST provide a COMPLETE response with both long_assessment and short_assessm
 
 IMPORTANT: If you don't see a quality setup, that's COMPLETELY ACCEPTABLE.
 - Use status: "none" for assessments with no valid setup
-- Use status: "waiting" for setups you're monitoring but not ready to trade
-- Use status: "ready" for setups that meet all criteria and are tradeable NOW
+- Use status: "waiting" for setups where the entry LEVEL is not yet defined
+  (e.g. structure still forming, no clear price to work an order at)
+- Use status: "ready" once you can name a specific entry price and direction
+
+RESTING-ORDER MODEL (read carefully):
+The system places a RESTING order at your entry price - a LIMIT for pullback/
+rejection entries or a STOP for breakout entries - and the broker fills it
+automatically if and when price reaches that level, between bars included.
+So you do NOT need to wait for a confirmation candle to print before going
+"ready". As soon as a setup has a clear entry level, mark it "ready" and let
+the resting order be the trigger. Reserve "waiting" for when there is no
+definable entry price yet, NOT for "price is at my level but I want to see it
+reject first" - that hesitation makes you miss fast intrabar moves.
+
+For each "ready" setup set order_type:
+- "LIMIT" : enter on a pullback INTO the level (FVG_FILL, EMA_BOUNCE,
+  COUNTER_TREND, level rejection). Entry price is the level itself.
+- "STOP"  : enter as price breaks THROUGH the level (MOMENTUM/breakout).
+  Entry price is just beyond the breakout level.
 
 For EACH assessment (long and short):
 1. Determine status: "none", "waiting", or "ready"
@@ -469,6 +486,7 @@ Respond in JSON format:
     "long_assessment": {{
         "status": "none" | "waiting" | "ready",
         "setup_type": "FVG_FILL" | "EMA_BOUNCE" | "MOMENTUM" | "LEVEL_TRADE" | "COUNTER_TREND" | null,
+        "order_type": "LIMIT" | "STOP" | null,
         "entry_plan": <price or null>,
         "stop_plan": <price or null>,
         "raw_target": <target before buffer or null>,
@@ -481,6 +499,7 @@ Respond in JSON format:
     "short_assessment": {{
         "status": "none" | "waiting" | "ready",
         "setup_type": "FVG_FILL" | "EMA_BOUNCE" | "MOMENTUM" | "LEVEL_TRADE" | "COUNTER_TREND" | null,
+        "order_type": "LIMIT" | "STOP" | null,
         "entry_plan": <price or null>,
         "stop_plan": <price or null>,
         "raw_target": <target before buffer or null>,
@@ -588,6 +607,13 @@ Only set primary_decision to LONG/SHORT if the corresponding assessment status i
                 if 'short_setup' not in decision:
                     decision['short_setup'] = self._assessment_to_setup(decision['short_assessment'])
 
+                # Ensure every setup carries an order_type (derive from setup_type
+                # if the model emitted the setup directly without one).
+                for _name in ('long_setup', 'short_setup'):
+                    _setup = decision.get(_name)
+                    if isinstance(_setup, dict) and not _setup.get('order_type'):
+                        _setup['order_type'] = self._derive_order_type(_setup.get('setup_type'))
+
                 # Set primary_decision based on assessment status
                 if 'primary_decision' not in decision:
                     if decision['long_assessment'].get('status') == 'ready':
@@ -610,10 +636,21 @@ Only set primary_decision to LONG/SHORT if the corresponding assessment status i
             logger.error(f"Unexpected error parsing response: {e}")
             return None
 
+    # Setup types that enter ON A PULLBACK to a level -> rest a LIMIT there.
+    # MOMENTUM enters as price breaks THROUGH a level -> rest a STOP there.
+    _LIMIT_SETUPS = {'FVG_FILL', 'EMA_BOUNCE', 'COUNTER_TREND', 'LEVEL_TRADE'}
+
+    def _derive_order_type(self, setup_type: Optional[str]) -> str:
+        """Map a setup type to a resting-order type when the model omits one."""
+        if setup_type and setup_type.upper() == 'MOMENTUM':
+            return 'STOP'
+        return 'LIMIT'
+
     def _assessment_to_setup(self, assessment: Dict[str, Any]) -> Dict[str, Any]:
         """Convert assessment format to setup format for backward compatibility"""
         return {
             'setup_type': assessment.get('setup_type'),
+            'order_type': assessment.get('order_type') or self._derive_order_type(assessment.get('setup_type')),
             'entry': assessment.get('entry_plan'),
             'stop': assessment.get('stop_plan'),
             'raw_target': assessment.get('raw_target'),  # Include for validation
