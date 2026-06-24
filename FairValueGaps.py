@@ -56,7 +56,14 @@ class FVGDisplay:
                 logger.info(f"Auto-detected instrument: {self.instrument}")
 
             df['DateTime'] = pd.to_datetime(df['DateTime'], format='mixed')
-            df = df.sort_values('DateTime').reset_index(drop=True)
+            df = df.sort_values('DateTime')
+            # The NT SecondHistoricalData strategy re-appends its 150-bar backfill
+            # every time the chart reloads, so the CSV accumulates duplicate
+            # timestamps. Duplicate rows interleaved with real bars break the 3-bar
+            # (c1,c2,c3) FVG-detection window and silently SUPPRESS genuine gaps.
+            # Keep the last write per bar (most recent OHLC) so detection sees one
+            # clean series regardless of how often NT re-appends.
+            df = df.drop_duplicates(subset=['DateTime'], keep='last').reset_index(drop=True)
             return df
         except Exception as e:
             logger.error(f"Error reading historical data: {e}")
