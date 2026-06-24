@@ -66,7 +66,14 @@ class TradingAgent:
         self.stop_loss_max = config.get('risk_management', {}).get('stop_loss_max', 50)
         self.stop_buffer = config.get('risk_management', {}).get('stop_buffer', 5)
 
-        logger.info(f"TradingAgent initialized (model={self.model}, "
+        # Instrument-specific, so the prompt/levels aren't hardcoded to NQ.
+        # Symbol for prompts/display (e.g. "NQ 09-26" -> "NQ").
+        self.instrument = config.get('execution', {}).get('instrument', 'NQ').split()[0]
+        # Psychological-level spacing in POINTS the agent reasons about (NQ default
+        # 100). Set levels.agent_psych_interval per instrument (ES ~25/50, CL ~1, GC ~25).
+        self.psych_interval = config.get('levels', {}).get('agent_psych_interval', 100)
+
+        logger.info(f"TradingAgent initialized (instrument={self.instrument}, model={self.model}, "
                     f"base_url={self.base_url}, min_rr={self.min_risk_reward})")
 
     def _find_psychological_levels(self, current_price: float, interval: int = 100) -> Dict[str, float]:
@@ -202,7 +209,7 @@ class TradingAgent:
         Returns:
             Formatted prompt string
         """
-        prompt = f"""You are an expert NQ futures trader specializing in price action analysis using Fair Value Gaps, EMAs, and momentum indicators.
+        prompt = f"""You are an expert {self.instrument} futures trader specializing in price action analysis using Fair Value Gaps, EMAs, and momentum indicators.
 
 YOUR TRADING PHILOSOPHY:
 ========================

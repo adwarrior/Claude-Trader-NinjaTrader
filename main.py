@@ -156,7 +156,9 @@ class TradingOrchestrator:
         from FairValueGaps import FVGDisplay
 
         # Create FVG display instance (but don't run its main loop)
-        fvg_display = FVGDisplay()
+        fvg_display = FVGDisplay(
+            min_gap_size=self.config['trading_params']['min_gap_size']
+        )
 
         # Load historical FVGs
         fvg_display.load_historical_fvgs()
