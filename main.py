@@ -113,7 +113,39 @@ class TradingOrchestrator:
         self.consecutive_losses = 0
         self.trading_paused = False
 
+        # Resting-entry state machine (MVP: fills/exits inferred from bars).
+        # pending_entry: a resting LIMIT/STOP entry working but not yet filled.
+        # in_position:   a setup whose entry was inferred filled; SL/TP are live.
+        self.pending_entry = None
+        self.in_position = None
+        self.max_pending_bars = self.config.get('execution', {}).get('max_pending_bars', 3)
+
         # Initialization complete
+
+    def _check_entry_fill(self, pend: dict, bar_high: float, bar_low: float) -> bool:
+        """Infer whether a resting entry would have filled within this bar's range."""
+        entry = pend['entry']
+        if pend['direction'] == 'LONG':
+            # LONG LIMIT rests below market (fills on dip); LONG STOP rests above (fills on break up)
+            return bar_low <= entry if pend['order_type'] == 'LIMIT' else bar_high >= entry
+        else:  # SHORT
+            # SHORT LIMIT rests above market (fills on pop); SHORT STOP rests below (fills on break down)
+            return bar_high >= entry if pend['order_type'] == 'LIMIT' else bar_low <= entry
+
+    def _check_position_exit(self, pos: dict, bar_high: float, bar_low: float):
+        """Infer SL/TP hit within the bar. Returns 'STOP', 'TARGET', or None.
+        If both are touched in one bar, assume STOP first (conservative)."""
+        if pos['direction'] == 'LONG':
+            hit_stop = bar_low <= pos['stop']
+            hit_target = bar_high >= pos['target']
+        else:  # SHORT
+            hit_stop = bar_high >= pos['stop']
+            hit_target = bar_low <= pos['target']
+        if hit_stop:
+            return 'STOP'
+        if hit_target:
+            return 'TARGET'
+        return None
 
     def check_risk_limits(self) -> tuple[bool, str]:
         """
@@ -216,6 +248,34 @@ class TradingOrchestrator:
 
                     # Check live FVG fills
                     fvg_display.check_live_fvg_fills(current_price)
+
+                    # --- Resting-entry lifecycle (MVP: infer from this bar's range) ---
+                    bar_high = float(historical_df.iloc[-1]['High'])
+                    bar_low = float(historical_df.iloc[-1]['Low'])
+
+                    if self.in_position:
+                        exit_kind = self._check_position_exit(self.in_position, bar_high, bar_low)
+                        if exit_kind:
+                            pos = self.in_position
+                            logger.info(f"POSITION EXIT inferred ({exit_kind}): {pos['direction']} "
+                                        f"entry {pos['entry']:.2f} | SL {pos['stop']:.2f} | TP {pos['target']:.2f}")
+                            self.in_position = None
+                    elif self.pending_entry:
+                        pend = self.pending_entry
+                        if self._check_entry_fill(pend, bar_high, bar_low):
+                            logger.info(f"ENTRY FILL inferred: {pend['direction']} {pend['order_type']} "
+                                        f"@ {pend['entry']:.2f} -> placing SL/TP bracket")
+                            self.signal_generator.place_exits(pend)
+                            self.in_position = pend
+                            self.pending_entry = None
+                            self.daily_trades += 1
+                        else:
+                            pend['bars_alive'] += 1
+                            if pend['bars_alive'] >= self.max_pending_bars:
+                                logger.info(f"RESTING ENTRY EXPIRED after {pend['bars_alive']} bars "
+                                            f"(unfilled @ {pend['entry']:.2f}) - cancelling")
+                                self.signal_generator.cancel_entry(pend)
+                                self.pending_entry = None
 
                     # Get active FVGs
                     active_fvgs = [fvg for fvg in fvg_display.active_fvgs if not fvg.get('filled', False)]
