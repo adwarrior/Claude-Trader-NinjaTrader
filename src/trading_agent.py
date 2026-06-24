@@ -114,7 +114,27 @@ class TradingAgent:
                         "content": prompt
                     }]
                 )
-                return response.choices[0].message.content
+                # Free OpenRouter models can return HTTP 200 with choices=None (an
+                # error object in the body) or null content when an upstream provider
+                # rate-limits/errors. Guard against it instead of crashing on
+                # choices[0] ('NoneType' object is not subscriptable), and retry since
+                # it's transient.
+                choices = getattr(response, "choices", None)
+                content = choices[0].message.content if choices else None
+                if content:
+                    return content
+
+                err = getattr(response, "error", None) or getattr(response, "model_extra", None)
+                logger.warning(
+                    f"Empty completion (attempt {attempt + 1}/{max_retries}) - "
+                    f"200 OK but no usable content. Body: {err or response}"
+                )
+                if attempt < max_retries - 1:
+                    delay = base_delay * (2 ** attempt)
+                    print(f"\n[WAIT] Model returned empty response. Retrying in {delay}s... (attempt {attempt + 1}/{max_retries})")
+                    time.sleep(delay)
+                    continue
+                raise RuntimeError(f"Empty completion after {max_retries} attempts: {err or 'no choices'}")
 
             except APIError as e:
                 error_message = str(e)
