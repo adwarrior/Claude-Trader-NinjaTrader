@@ -1,19 +1,19 @@
 {
   "current_bar_index": 1,
   "overall_bias": "bullish",
-  "waiting_for": "Pullback to EMA21 (~30060) for a potential EMA_BOUNCE long entry. No bearish confluence observed.",
+  "waiting_for": "Pullback to EMA21 (~30070) for a potential EMA_BOUNCE long entry. No bearish confluence observed.",
   "long_assessment": {
     "status": "waiting",
     "setup_type": "EMA_BOUNCE",
     "order_type": "LIMIT",
-    "entry_plan": 30059.72,
-    "stop_plan": 30019.72,
-    "raw_target": 30195.0,
-    "target_plan": 30190.0,
-    "risk_reward": 3.26,
+    "entry_plan": 30069.92,
+    "stop_plan": 30029.92,
+    "raw_target": 30190.0,
+    "target_plan": 30185.0,
+    "risk_reward": 2.7,
     "confidence": 0.71,
-    "reasoning": "Price remains in a strong up\u2011trend (EMA21 > EMA75 > EMA150). The last bar closed 8.8 points above EMA21, so the pull\u2011back entry has not been triggered yet. EMA21 now sits at 30059.72, offering a clean limit entry with confluence from bullish EMA alignment, neutral stochastic (43.8) indicating room for upside, and psychological support at the 30000 level. Stop is placed 40 points below entry, giving >3:1 R/R after the 5\u2011point target buffer.",
-    "setup_age_bars": 2
+    "reasoning": "The up\u2011trend remains intact (EMA21 > EMA75 > EMA150). Price is still above EMA21, so the pull\u2011back entry has not been triggered. EMA21 at 30069.92 offers a clean limit entry with confluence from bullish EMA alignment, neutral stochastic (56.9) indicating room for upside, and nearby psychological support at the 30000 round level. Stop is placed 40 points below entry, giving >2.5:1 R/R after the 5\u2011point target buffer.",
+    "setup_age_bars": 3
   },
   "short_assessment": {
     "status": "none",
@@ -25,9 +25,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "No bearish FVG within reasonable distance, price is above EMA21 in a clear up\u2011trend, stochastic is not overbought, and there is no rejection at the 30100 level. Therefore no valid short setup exists."
+    "reasoning": "No bearish FVG within reasonable distance, price is well above EMA21 in a clear up\u2011trend, stochastic is not overbought, and there is no rejection at the 30100 psychological level. Therefore no valid short setup exists."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 3,
-  "last_updated": "2026-06-25T00:32:52.609484"
+  "bars_since_last_trade": 4,
+  "last_updated": "2026-06-25T00:59:06.136608"
 }
