@@ -1,7 +1,7 @@
 {
-  "current_bar_index": 11,
+  "current_bar_index": 12,
   "overall_bias": "bearish",
-  "waiting_for": "Rejection at EMA21 resistance (29838) or 29900 psychological level for EMA_BOUNCE short entry",
+  "waiting_for": "Break below 29700 psychological level with retest for LEVEL_TRADE short entry, or corrective bounce to EMA21 (29831) for EMA_BOUNCE short",
   "long_assessment": {
     "status": "none",
     "setup_type": null,
@@ -11,21 +11,21 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "NO LONG SETUP - Strong downtrend remains intact (EMA21 29838 < EMA75 30140 < EMA150 30233). No bullish FVGs below current price. Price at 29858.75 is above EMA21 but in a powerful downtrend - this is a corrective bounce, not a trend reversal. Stochastic at 55.85 is neutral, not oversold. Nearest psychological support at 29800 is 58.75 pts away. No confluence for long entry - trend, momentum, and structure all bearish."
+    "reasoning": "NO LONG SETUP - Strong downtrend remains fully intact (EMA21 29831 < EMA75 30130 < EMA150 30227). No bullish FVGs below current price. Price at 29775.50 is 55.75 pts below EMA21 and 75.5 pts above 29700 psych support. Stochastic at 56.10 is neutral, not oversold - no mean reversion signal. A long at 29700 would be a COUNTER_TREND trade against powerful bearish structure with no momentum confirmation. Nearest bullish FVG is 312 pts above at 30054-30093. No confluence for long entry."
   },
   "short_assessment": {
     "status": "waiting",
-    "setup_type": "EMA_BOUNCE",
-    "entry_plan": 29858.75,
-    "stop_plan": 29890.0,
-    "raw_target": 29750.0,
-    "target_plan": 29755.0,
-    "risk_reward": 3.03,
-    "confidence": 0.65,
-    "reasoning": "EMA_BOUNCE SETUP MATURING (Age: 7 bars) - Price has completed the corrective bounce from 29793.75 to 29858.75 (+65 pts), reaching and slightly exceeding EMA21 resistance (now 29838.18). In strong downtrend (EMA21 < EMA75 < EMA150), EMA21 acts as dynamic resistance. Stochastic at 55.85 has room to decline from neutral. Price is now at the ideal entry zone for the EMA_BOUNCE short we've been tracking. Stop placed at 29890 (above recent high + buffer, ~31 pts risk). Target at 29750 (midway to 29700 psych level) with 5pt buffer = 29755. Risk ~31, Reward ~104 = 3.35:1 R/R. Waiting for rejection candle or stall at current level (29858-29865) or at 29900 psych level (+41 pts) for confirmation. Confidence increased as setup has reached planned entry zone.",
-    "setup_age_bars": 7
+    "setup_type": "LEVEL_TRADE",
+    "entry_plan": 29700.0,
+    "stop_plan": 29730.0,
+    "raw_target": 29600.0,
+    "target_plan": 29605.0,
+    "risk_reward": 3.17,
+    "confidence": 0.6,
+    "reasoning": "LEVEL_TRADE SETUP DEVELOPING (Age: 1 bar) - Previous EMA_BOUNCE short setup at EMA21 (29838) is now INVALID as price dropped 83 pts to 29775 without bouncing to resistance. New setup: Strong downtrend approaching 29700 psychological support (-75.5 pts). In bearish trends, psych levels often break with continuation. Waiting for: 1) Clean break below 29700, 2) Retest of 29700 as resistance, 3) Rejection candle for entry. Stop at 29730 (30 pts above, beyond normal volatility). Target at 29600 (next 100-pt psych level) with 5pt buffer = 29605. Risk 30, Reward 95 = 3.17:1 R/R. Stochastic at 56.10 has room to decline. EMA structure fully aligned bearish. Confidence moderate as setup requires break/retest confirmation.",
+    "setup_age_bars": 8
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 11,
-  "last_updated": "2026-06-24T13:12:06.480151"
+  "bars_since_last_trade": 12,
+  "last_updated": "2026-06-24T14:20:11.408184"
 }
