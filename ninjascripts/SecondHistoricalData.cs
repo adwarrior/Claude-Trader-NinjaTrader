@@ -31,7 +31,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 BarsRequiredToTrade = 150;
                 IsOverlay           = true;
 
-                HistoricalDataFilePath = @"C:\ClaudeTrader\data\HistoricalData.csv";
+                HistoricalDataFilePath = @"C:\Users\Ad\Documents\Claude-Trader-NinjaTrader\data\HistoricalData.csv";
 
                 // Stochastic defaults — confirm these match what the AI model expects.
                 // NT8 Stochastics arg order: (periodD, periodK, smooth)
@@ -48,15 +48,18 @@ namespace NinjaTrader.NinjaScript.Strategies
                 ema150     = EMA(150);
                 stochastic = Stochastics(StochPeriodD, StochPeriodK, StochSmooth);
 
-                // Write header once — prevents mid-session reload from wiping accumulated history.
+                // Truncate + rewrite the header on every load so the file holds ONE
+                // clean copy of the loaded window. The previous "write header only if
+                // absent" logic preserved old content across reloads, but because
+                // OnBarUpdate replays every historical bar on each chart reload it
+                // re-appended the whole backfill each time -> duplicate timestamps that
+                // break the Python 3-bar FVG-detection window and suppress real gaps.
+                // Fresh file per load = no duplicate accumulation, no unbounded growth.
                 try
                 {
                     Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-                    if (!File.Exists(filePath))
-                    {
-                        using (StreamWriter w = new StreamWriter(filePath, false))
-                            w.WriteLine("DateTime,Open,High,Low,Close,EMA21,EMA75,EMA150,StochD");
-                    }
+                    using (StreamWriter w = new StreamWriter(filePath, false))
+                        w.WriteLine("DateTime,Open,High,Low,Close,EMA21,EMA75,EMA150,StochD");
                 }
                 catch (Exception ex)
                 {

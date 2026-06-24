@@ -24,7 +24,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 EntriesPerDirection = 1;
                 BarsRequiredToTrade = 20;
 
-                LiveFeedFilePath = @"C:\ClaudeTrader\data\LiveFeed.csv";
+                LiveFeedFilePath = @"C:\Users\Ad\Documents\Claude-Trader-NinjaTrader\data\LiveFeed.csv";
             }
             else if (State == State.DataLoaded)
             {
