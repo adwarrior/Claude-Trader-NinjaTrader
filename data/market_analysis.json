@@ -1,7 +1,7 @@
 {
-  "current_bar_index": 1,
+  "current_bar_index": 6,
   "overall_bias": "bearish",
-  "waiting_for": "Price to bounce to 29800 psychological level or EMA21 (29853) for high-probability short entry, or break below 29790 (FVG bottom) for continuation",
+  "waiting_for": "Price to continue bouncing to EMA21 (29845) for high-probability EMA_BOUNCE short entry with 2:1 R/R",
   "long_assessment": {
     "status": "none",
     "setup_type": null,
@@ -11,21 +11,21 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "NO LONG SETUP - Strong downtrend intact (EMA21 < EMA75 < EMA150). Price at 29797.75 has reached bullish FVG fill zone (29790-29797.25) and psychological 29800, but stochastic at 51 is not oversold, no bullish FVG above nearby (nearest 290 pts away), and trend is firmly bearish. Counter-trend bounce trade would be catching a falling knife with no momentum confluence."
+    "reasoning": "NO LONG SETUP - Strong downtrend intact (EMA21 < EMA75 < EMA150). Price bounced 25 pts from 29800 psych level/FVG zone to 29822.75, but this is a corrective bounce in a bearish trend. Stochastic at 51.23 is neutral, not oversold. Nearest bearish FVG above is 265 pts away at 30054-30093. No confluence for long: trend bearish, no oversold momentum, no nearby bullish FVG below, bounce at 29800 is likely just retracement before next leg down."
   },
   "short_assessment": {
     "status": "waiting",
     "setup_type": "EMA_BOUNCE",
-    "entry_plan": 29805.0,
-    "stop_plan": 29830.0,
+    "entry_plan": 29845.0,
+    "stop_plan": 29870.0,
     "raw_target": 29790.0,
     "target_plan": 29795.0,
-    "risk_reward": 0.4,
-    "confidence": 0.65,
-    "reasoning": "WAITING FOR SHORT ENTRY - Price dropped 29 pts to 29797.75, reaching the bullish FVG zone (29790-29797.25) and psychological 29800 level. Original EMA_BOUNCE setup at EMA21 (29853) didn't trigger as price extended lower without pullback. Now two refined entry options: 1) LEVEL_TRADE short on rejection at 29800 psych level (entry ~29805, stop 29830, target 29795 FVG fill + buffer) - but R/R only 0.4:1, below minimum. 2) Continue waiting for bounce to EMA21 (29853) for proper EMA_BOUNCE with 2.2:1 R/R. 3) Break below 29790 for MOMENTUM continuation targeting 29700 psych level. Stochastic at 51 has room to decline. Best risk/reward remains EMA_BOUNCE at 29853 - staying patient for quality setup.",
-    "setup_age_bars": 1
+    "risk_reward": 2.0,
+    "confidence": 0.7,
+    "reasoning": "EMA_BOUNCE SETUP DEVELOPING - Price bounced 25 pts from 29800 psych level/bullish FVG zone (29790-29797.25) to 29822.75, now 22.6 pts below EMA21 (29845.34). This is the exact bounce anticipated in previous analysis. EMA21 acts as dynamic resistance in strong downtrend (EMA21 < EMA75 < EMA150). Stochastic at 51.23 has room to decline from neutral. Entry at EMA21 ~29845, stop 25 pts above at 29870 (beyond EMA21 + buffer), target 29790 (FVG bottom fill) with 5pt buffer = 29795. Risk 25, Reward 50 = 2.0:1 R/R. Setup age: 2 bars. Continuing to wait for price to reach EMA21 resistance zone.",
+    "setup_age_bars": 2
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 5,
-  "last_updated": "2026-06-24T08:30:50.837650"
+  "bars_since_last_trade": 6,
+  "last_updated": "2026-06-24T09:15:08.129097"
 }
