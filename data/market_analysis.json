@@ -1,18 +1,19 @@
 {
   "current_bar_index": 1,
-  "overall_bias": "bearish",
-  "waiting_for": "No quality setup",
+  "overall_bias": "bullish",
+  "waiting_for": "Long EMA bounce / psychological level at 29800. No short confluence yet.",
   "long_assessment": {
     "status": "none",
-    "setup_type": null,
-    "order_type": null,
-    "entry_plan": null,
-    "stop_plan": null,
-    "raw_target": null,
-    "target_plan": null,
-    "risk_reward": null,
-    "confidence": 0.0,
-    "reasoning": "The only bullish opportunity is the bearish FVG above (29480\u201129507) which would require a long to fill it. The gap is 78 points away, price is deep in a downtrend (EMA21 < EMA75 < EMA150), stochastic is only mildly bullish (63) and there is no nearby EMA support or psychological level to act as a realistic entry. No confluence meets the minimum R/R or confidence thresholds, so no long setup is viable."
+    "setup_type": "LEVEL_TRADE",
+    "order_type": "LIMIT",
+    "entry_plan": 29800.0,
+    "stop_plan": 29760.0,
+    "raw_target": 29900.0,
+    "target_plan": 29895.0,
+    "risk_reward": 2.38,
+    "confidence": 0.68,
+    "reasoning": "Price is 8.75 points above the key psychological level 29800, which often acts as support. A pull\u2011back to 29800 offers a clean limit entry. Confluence: (1) EMA21 (29495) is below the level, providing a bullish bias; (2) Stochastic at 73.6 shows upward momentum but not overbought; (3) The level sits just below the current price, giving a tight risk (40 pts) and a solid target at the next round number 29900. After applying the 5\u2011point buffer the final target is 29895, yielding a R/R of ~2.4, above the 1.3 minimum, and confidence exceeds the 0.65 threshold.",
+    "setup_age_bars": 0
   },
   "short_assessment": {
     "status": "none",
@@ -24,9 +25,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "A short EMA\u2011bounce would need price to rise to EMA21 (29371.7) and then reject, but price is currently 52 points above EMA21 and moving away. Stochastic is not overbought (>80) and there is no bearish FVG below to target. Psychological level at 29500 is above current price, and the next support at 29400 is only 24 points away with no clear rejection signal. Consequently, no short entry meets the required confluence or risk/reward criteria."
+    "reasoning": "The nearest bullish FVG below (29658\u201129672) is 145 points away, requiring a significant price drop before a short FVG_FILL entry becomes viable. EMA21 is above current price, providing no immediate resistance, and stochastic is not overbought. No short EMA bounce, momentum, or level\u2011rejection signal is present, so no quality short setup exists."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 8,
-  "last_updated": "2026-06-24T21:07:26.609513"
+  "bars_since_last_trade": 0,
+  "last_updated": "2026-06-24T21:33:58.481733"
 }
