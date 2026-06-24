@@ -32,7 +32,7 @@
     "quantity": 1,
     "host": "localhost",
     "port": 36973,
-    "dry_run": true
+    "dry_run": false
   },
   "llm": {
     "base_url": "https://openrouter.ai/api/v1",
