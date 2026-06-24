@@ -12,6 +12,7 @@ produces {decision, entry, stop, target} works here.
 
 import logging
 import sys
+import uuid
 from typing import Dict, Any, Optional
 from datetime import datetime
 from pathlib import Path
