@@ -1,7 +1,7 @@
 {
   "current_bar_index": 1,
   "overall_bias": "bearish",
-  "waiting_for": "Price to climb toward EMA21 (~29799) for a short EMA bounce entry. No new confluence appeared this bar.",
+  "waiting_for": "No quality setup \u2013 price is far below EMA21 and the nearest bearish FVG is 306 points away, reducing confidence in the prior short EMA\u2011bounce plan.",
   "long_assessment": {
     "status": "none",
     "setup_type": null,
@@ -12,22 +12,22 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "No bullish FVG below price, no EMA support for longs, stochastic neutral, and no psychological break to the upside. Therefore no viable long setup."
+    "reasoning": "There is no bullish FVG below the current price, no pull\u2011back to EMA21 for a long bounce, stochastic is neutral and psychological levels do not provide a clear breakout. Hence no viable long setup."
   },
   "short_assessment": {
-    "status": "waiting",
-    "setup_type": "EMA_BOUNCE",
-    "order_type": "LIMIT",
-    "entry_plan": 29799.05,
-    "stop_plan": 29850.0,
-    "raw_target": 29800.0,
-    "target_plan": 29805.0,
-    "risk_reward": 1.33,
-    "confidence": 0.52,
-    "reasoning": "The market remains in a strong downtrend (EMA21 < EMA75 < EMA150). EMA21 at 29799 acts as dynamic resistance. We are waiting for price to pull up to that level for a clean limit short entry. Confluence: (1) EMA alignment, (2) nearby psychological level 29800, (3) stochastic neutral (no opposing bullish momentum). Distance to entry has increased to ~196 points, so confidence is modest and below the 0.65 threshold.",
-    "setup_age_bars": 2
+    "status": "none",
+    "setup_type": null,
+    "order_type": null,
+    "entry_plan": null,
+    "stop_plan": null,
+    "raw_target": null,
+    "target_plan": null,
+    "risk_reward": null,
+    "confidence": 0.0,
+    "reasoning": "The previous short EMA\u2011bounce plan required price to climb to ~29,762, but price is now at 29,389 \u2013 373 points below EMA21. The distance to entry has widened, confidence has dropped below the 0.65 threshold, and no new confluence (e.g., FVG fill, momentum shift, or level rejection) has appeared. The setup is therefore abandoned.",
+    "setup_age_bars": 3
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 3,
-  "last_updated": "2026-06-24T18:26:06.757218"
+  "bars_since_last_trade": 4,
+  "last_updated": "2026-06-24T19:04:22.624852"
 }
