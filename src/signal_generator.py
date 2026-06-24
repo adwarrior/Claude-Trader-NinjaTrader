@@ -191,6 +191,108 @@ class SignalGenerator:
             logger.error(f"Error submitting signal to NT8 ATI: {e}")
             return False
 
+    def place_entry(self, decision: Dict[str, Any],
+                    timestamp: datetime = None) -> Optional[Dict[str, Any]]:
+        """
+        Validate a decision and place a RESTING entry order (LIMIT or STOP) at
+        the planned price instead of a market order. Returns a pending-order
+        descriptor that the main loop tracks until fill, or None on failure.
+
+        The SL/TP are NOT sent here - they are placed via place_exits() once the
+        entry is inferred to have filled (see main loop fill-inference).
+        """
+        is_valid, error_msg = self.validate_decision(decision)
+        if not is_valid:
+            logger.error(f"Signal validation failed: {error_msg}")
+            return None
+
+        if timestamp is None:
+            timestamp = datetime.now()
+
+        direction = decision['decision']          # "LONG" / "SHORT"
+        entry = decision['entry']
+        stop = decision['stop']
+        target = decision['target']
+        order_type = decision.get('order_type', 'LIMIT')
+
+        pending = {
+            'direction': direction,
+            'order_type': order_type,
+            'entry': entry,
+            'stop': stop,
+            'target': target,
+            'instrument': self.instrument,
+            'quantity': self.quantity,
+            'placed_at': timestamp,
+            'order_id': None,
+        }
+
+        if self.dry_run:
+            logger.info(
+                f"[DRY RUN] Would place resting {order_type} entry: {direction} "
+                f"{self.quantity}x {self.instrument} @ {entry:.2f} | SL {stop:.2f} | TP {target:.2f}"
+            )
+            pending['order_id'] = f"dry-{uuid.uuid4().hex[:12]}"
+            self._record(decision, timestamp, status="dry_run_entry")
+            return pending
+
+        try:
+            order_id = self.bridge.entry_order(
+                instrument=self.instrument,
+                direction=direction,
+                quantity=self.quantity,
+                order_type=order_type,
+                price=entry,
+            )
+            pending['order_id'] = order_id
+            logger.info(
+                f"Resting {order_type} entry placed: {direction} @ {entry:.2f} "
+                f"(id={order_id}) | SL {stop:.2f} | TP {target:.2f}"
+            )
+            self._record(decision, timestamp, status="entry_placed", responses=order_id)
+            return pending
+        except NTBridgeError as e:
+            logger.error(f"Error placing resting entry to NT8 ATI: {e}")
+            return None
+
+    def place_exits(self, pending: Dict[str, Any]) -> bool:
+        """Fire the SL/TP OCO bracket after the resting entry is inferred filled."""
+        if self.dry_run:
+            logger.info(
+                f"[DRY RUN] Would place exits: SL {pending['stop']:.2f} / "
+                f"TP {pending['target']:.2f} (OCO) for {pending['direction']} position"
+            )
+            return True
+        try:
+            resp = self.bridge.bracket_exits(
+                instrument=pending['instrument'],
+                direction=pending['direction'],
+                quantity=pending['quantity'],
+                stop_loss=pending['stop'],
+                take_profit=pending['target'],
+            )
+            logger.info(f"Bracket exits placed (OCO): {resp}")
+            return True
+        except NTBridgeError as e:
+            logger.error(f"Error placing bracket exits to NT8 ATI: {e}")
+            return False
+
+    def cancel_entry(self, pending: Dict[str, Any]) -> bool:
+        """Cancel an unfilled resting entry order (setup invalidated / expired)."""
+        order_id = pending.get('order_id')
+        if self.dry_run:
+            logger.info(f"[DRY RUN] Would cancel resting entry {order_id}")
+            return True
+        if not order_id:
+            return False
+        try:
+            self.bridge.cancel_order(order_id)
+            logger.info(f"Resting entry cancelled: {order_id}")
+            return True
+        except NTBridgeError as e:
+            logger.error(f"Error cancelling resting entry {order_id}: {e}")
+            return False
+
     def close_position(self) -> bool:
         """Flatten the configured instrument and cancel its working orders."""
         if self.dry_run:
