@@ -514,6 +514,7 @@ Respond in JSON format:
 
     "long_setup": {{
         "setup_type": <from long_assessment>,
+        "order_type": <order_type from long_assessment>,
         "entry": <entry_plan from long_assessment>,
         "stop": <stop_plan from long_assessment>,
         "target": <target_plan (WITH buffer) from long_assessment>,
