@@ -525,6 +525,7 @@ Respond in JSON format:
 
     "short_setup": {{
         "setup_type": <from short_assessment>,
+        "order_type": <order_type from short_assessment>,
         "entry": <entry_plan from short_assessment>,
         "stop": <stop_plan from short_assessment>,
         "target": <target_plan (WITH buffer) from short_assessment>,
