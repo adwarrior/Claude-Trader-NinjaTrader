@@ -1,32 +1,34 @@
 {
   "current_bar_index": 1,
   "overall_bias": "bearish",
-  "waiting_for": "Long: break above 29900 for a momentum entry; Short: pull\u2011back to EMA21 (~29824.5) for a potential EMA bounce short. No confluence strong enough to go ready yet.",
+  "waiting_for": "Short EMA bounce to EMA21 (~29818.30) \u2013 price must climb to that level before a valid entry can be placed.",
   "long_assessment": {
-    "status": "waiting",
-    "setup_type": "LEVEL_TRADE",
-    "order_type": "STOP",
-    "entry_plan": 29900.0,
-    "stop_plan": 29840.0,
-    "raw_target": 30054.25,
-    "target_plan": 30049.25,
-    "risk_reward": 2.3,
-    "confidence": 0.58,
-    "reasoning": "A break above the psychological level 29900 would signal continuation of the underlying downtrend reversal bias. The breakout would be entered with a STOP order just above 29900. Confluence: (1) proximity to round number, (2) EMA21 is only ~70 pts below price, offering near\u2011term support if the move stalls, (3) stochastic is neutral, allowing a clean breakout. Target is the top of the nearest bearish FVG (30054\u201130093) where price often stalls after filling the gap. Stop is placed 60 pts below entry to give the trade breathing room while keeping R/R > 1.3."
+    "status": "none",
+    "setup_type": null,
+    "order_type": null,
+    "entry_plan": null,
+    "stop_plan": null,
+    "raw_target": null,
+    "target_plan": null,
+    "risk_reward": null,
+    "confidence": 0.0,
+    "reasoning": "No bullish FVG below price, no breakout above the nearest psychological level (29800), and stochastic is neutral. There is no confluence for a long entry at this bar.",
+    "setup_age_bars": 1
   },
   "short_assessment": {
     "status": "waiting",
     "setup_type": "EMA_BOUNCE",
     "order_type": "LIMIT",
-    "entry_plan": 29824.53,
-    "stop_plan": 29880.0,
+    "entry_plan": 29818.3,
+    "stop_plan": 29870.0,
     "raw_target": 29800.0,
     "target_plan": 29805.0,
-    "risk_reward": 1.43,
-    "confidence": 0.62,
-    "reasoning": "Price is currently 70.97 pts above EMA21, which acts as dynamic resistance in a strong downtrend (EMA21 < EMA75 < EMA150). A pull\u2011back to EMA21 would provide a clean limit entry for a short. Confluence: (1) EMA alignment confirming bearish bias, (2) psychological level 29800 lies just below EMA21, offering an additional magnet, (3) stochastic is neutral, not opposing the short bias. Target is the 29800 round\u2011number level; a 5\u2011pt buffer moves it to 29805. Stop is set 55.5 pts above entry, yielding an R/R \u2248 1.43, meeting the minimum requirement."
+    "risk_reward": 1.33,
+    "confidence": 0.55,
+    "reasoning": "Strong downtrend confirmed by EMA21 < EMA75 < EMA150. EMA21 (29818.30) sits ~62 points above current price and acts as dynamic resistance. A pull\u2011back up to EMA21 would provide a clean limit entry for a short. Confluence: (1) EMA alignment, (2) nearby psychological level 29800 just below EMA21, (3) stochastic is neutral, not opposing the short bias. Target is the 29800 round\u2011number level with a 5\u2011point buffer (29805). Stop is placed ~52 points above entry, giving R/R \u2248 1.33, meeting the minimum requirement. Confidence remains below the 0.65 threshold, so we wait for price to approach the EMA.",
+    "setup_age_bars": 1
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 1,
-  "last_updated": "2026-06-24T16:26:43.962125"
+  "bars_since_last_trade": 2,
+  "last_updated": "2026-06-24T17:27:06.627958"
 }
