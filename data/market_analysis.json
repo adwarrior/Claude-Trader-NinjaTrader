@@ -1,5 +1,5 @@
 {
-  "current_bar_index": 5,
+  "current_bar_index": 1,
   "overall_bias": "bearish",
   "waiting_for": "No quality setup",
   "long_assessment": {
@@ -12,7 +12,7 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The only potential long opportunity is the bearish FVG above (29661.5\u201129700). It is 193.5 points away, requires a strong upward move against the prevailing downtrend (EMA21 < EMA75 < EMA150) and there is no bullish momentum (stochastic is neutral). Confidence falls well below the 0.65 threshold, so we keep the long assessment as none."
+    "reasoning": "The nearest bullish FVG (29480\u201129507) is 155 points above current price (29347). A long would require a strong upward move against the clear downtrend (EMA21 < EMA75 < EMA150) and there is no bullish momentum (stochastic 56.5, neutral). No EMA bounce or level break is imminent, so no viable long setup exists."
   },
   "short_assessment": {
     "status": "none",
@@ -24,9 +24,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "A short EMA\u2011bounce would require price to rise to EMA21 (29761.6) and then reject, but price is currently 260 points below that level and moving further away. No bearish FVG below, no overbought stochastic, and no psychological resistance break. The previous short plan has deteriorated, so the short assessment is none."
+    "reasoning": "A short EMA\u2011bounce would need price to rise to EMA21 (29504.99) and then reject. Price is currently 158 points below that level and moving further away. There are no overbought stochastic conditions, no bearish FVG below, and no psychological resistance break. Hence no short entry criteria are met."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 5,
-  "last_updated": "2026-06-24T19:43:15.656816"
+  "bars_since_last_trade": 6,
+  "last_updated": "2026-06-24T20:15:04.880887"
 }
