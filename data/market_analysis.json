@@ -1,19 +1,18 @@
 {
   "current_bar_index": 1,
   "overall_bias": "bullish",
-  "waiting_for": "Pullback to EMA21 (30014.07) for a long EMA\u2011bounce entry",
+  "waiting_for": "EMA21 bounce entry to trigger at 30060.29",
   "long_assessment": {
-    "status": "none",
+    "status": "ready",
     "setup_type": "EMA_BOUNCE",
     "order_type": "LIMIT",
-    "entry_plan": 30014.07,
-    "stop_plan": 29974.07,
+    "entry_plan": 30060.29,
+    "stop_plan": 30020.29,
     "raw_target": 30200.0,
     "target_plan": 30195.0,
-    "risk_reward": 4.53,
+    "risk_reward": 3.37,
     "confidence": 0.78,
-    "reasoning": "The market remains in a strong up\u2011trend (EMA21 > EMA75 > EMA150). The price is currently 88 pts above EMA21, offering a classic pull\u2011back entry. EMA21 acts as dynamic support; a limit order at 30014.07 will capture the bounce. Confluence: bullish EMA alignment, neutral stochastic (57.5) confirming lack of over\u2011extension, and the next psychological resistance at 30200 provides a clear target. Stop is placed 40 pts below entry to give the trade breathing room while keeping R/R > 1.3.",
-    "setup_age_bars": 0
+    "reasoning": "Price has pulled back exactly to EMA21 (30060.29) in a strong uptrend (EMA21 > EMA75 > EMA150). This completes the pullback setup we were waiting for. Stochastic cooled from 57.5 to 37.75, confirming healthy pullback without oversold extreme. Confluence: 1) EMA21 dynamic support, 2) Strong bullish EMA alignment, 3) Psychological support at 30000 below (40 pts cushion), 4) Next major resistance at 30200 provides 140pt target. Stop at 30020.29 (40 pts) allows breathing room below EMA21 while maintaining >3:1 R/R to 30200 target. LIMIT order at EMA21 captures the bounce."
   },
   "short_assessment": {
     "status": "none",
@@ -25,10 +24,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "No bearish confluence is present. The nearest bullish FVG is far below (\u2248\u2011440 pts) and the nearest bearish FVG is far above (+649 pts). Stochastic is neutral, EMA structure is bullish, and there is no rejection at the 30100 level. Therefore no valid short setup exists on this bar.",
-    "setup_age_bars": 2
+    "reasoning": "No bearish confluence present. Price is at EMA21 support in a strong uptrend, not at resistance. Stochastic at 37.75 is not overbought. Nearest bearish FVG is 692 pts above at 30680-30756. No rejection at 30100 occurred - price simply pulled back normally. Counter-trend short would fight the dominant trend with no catalyst."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 0,
-  "last_updated": "2026-06-24T23:26:34.042895"
+  "bars_since_last_trade": 1,
+  "last_updated": "2026-06-24T23:40:03.142751"
 }
