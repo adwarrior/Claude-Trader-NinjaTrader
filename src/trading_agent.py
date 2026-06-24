@@ -387,7 +387,7 @@ Stochastic: {stoch:.2f}
             prompt += "  Neutral zone\n"
 
         # Add psychological level analysis
-        nearest_levels = self._find_psychological_levels(current_price)
+        nearest_levels = self._find_psychological_levels(current_price, self.psych_interval)
         prompt += f"""
 PSYCHOLOGICAL LEVELS (EMS):
 ============================
@@ -420,7 +420,7 @@ DECISION CRITERIA:
 ==================
 - Minimum Risk/Reward: {self.min_risk_reward}:1
 - Stop Loss Range: {self.stop_loss_min}-{self.stop_loss_max} points
-- Recommended Stop: {self.stop_loss_default} points (NQ appropriate)
+- Recommended Stop: {self.stop_loss_default} points ({self.instrument} appropriate)
 - Stop Buffer: {self.stop_buffer} points beyond FVG zone
 - Confidence Threshold: {self.confidence_threshold}
 
@@ -884,7 +884,7 @@ Only set primary_decision to LONG/SHORT if the corresponding assessment status i
         # Build display
         lines = []
         lines.append("="*60)
-        lines.append(f"NQ @ {price:.2f}")
+        lines.append(f"{self.instrument} @ {price:.2f}")
         lines.append("="*60)
         lines.append(f"FVG: {bull_str} | {bear_str}")
         lines.append(f"EMA: {trend} | Stoch: {stoch:.0f}")

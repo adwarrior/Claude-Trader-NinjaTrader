@@ -17,6 +17,7 @@
   },
   "levels": {
     "psychological_intervals": [1000],
+    "agent_psych_interval": 100,
     "confluence_tolerance": 10.0,
     "track_historical_strength": true
   },
