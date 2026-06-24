@@ -1,7 +1,7 @@
 {
-  "current_bar_index": 1,
+  "current_bar_index": 5,
   "overall_bias": "bearish",
-  "waiting_for": "No quality setup \u2013 price is far below EMA21 and the nearest bearish FVG is 306 points away, reducing confidence in the prior short EMA\u2011bounce plan.",
+  "waiting_for": "No quality setup",
   "long_assessment": {
     "status": "none",
     "setup_type": null,
@@ -12,7 +12,7 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "There is no bullish FVG below the current price, no pull\u2011back to EMA21 for a long bounce, stochastic is neutral and psychological levels do not provide a clear breakout. Hence no viable long setup."
+    "reasoning": "The only potential long opportunity is the bearish FVG above (29661.5\u201129700). It is 193.5 points away, requires a strong upward move against the prevailing downtrend (EMA21 < EMA75 < EMA150) and there is no bullish momentum (stochastic is neutral). Confidence falls well below the 0.65 threshold, so we keep the long assessment as none."
   },
   "short_assessment": {
     "status": "none",
@@ -24,10 +24,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The previous short EMA\u2011bounce plan required price to climb to ~29,762, but price is now at 29,389 \u2013 373 points below EMA21. The distance to entry has widened, confidence has dropped below the 0.65 threshold, and no new confluence (e.g., FVG fill, momentum shift, or level rejection) has appeared. The setup is therefore abandoned.",
-    "setup_age_bars": 3
+    "reasoning": "A short EMA\u2011bounce would require price to rise to EMA21 (29761.6) and then reject, but price is currently 260 points below that level and moving further away. No bearish FVG below, no overbought stochastic, and no psychological resistance break. The previous short plan has deteriorated, so the short assessment is none."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 4,
-  "last_updated": "2026-06-24T19:04:22.624852"
+  "bars_since_last_trade": 5,
+  "last_updated": "2026-06-24T19:43:15.656816"
 }
