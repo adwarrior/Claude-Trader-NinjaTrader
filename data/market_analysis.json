@@ -1,32 +1,34 @@
 {
   "current_bar_index": 1,
   "overall_bias": "bullish",
-  "waiting_for": "Pull\u2011back to EMA21 (~29815) for a long EMA\u2011bounce entry; break above 30000 for a short level\u2011rejection entry.",
+  "waiting_for": "Pullback to EMA21 (~30006) for a long EMA-bounce entry; rejection at 30100 for a short level-trade entry (lower probability).",
   "long_assessment": {
-    "status": "ready",
+    "status": "waiting",
     "setup_type": "EMA_BOUNCE",
     "order_type": "LIMIT",
-    "entry_plan": 29815.37,
-    "stop_plan": 29775.37,
-    "raw_target": 30000.0,
-    "target_plan": 29995.0,
-    "risk_reward": 4.48,
-    "confidence": 0.78,
-    "reasoning": "Price is in a strong up\u2011trend (EMA21 > EMA75 > EMA150). A pull\u2011back to EMA21 offers a classic EMA\u2011bounce long. Confluence: (1) EMA21 sits ~174 pts below current price, acting as dynamic support; (2) Stochastic at 83.4 is high but not yet overbought enough to invalidate bullish bias; (3) Psychological round number 30000 lies just 10.8 pts above price \u2013 a natural target. With a 40\u2011pt stop below EMA21 the R/R exceeds 4:1, meeting all criteria."
+    "entry_plan": 30005.96,
+    "stop_plan": 29965.96,
+    "raw_target": 30100.0,
+    "target_plan": 30095.0,
+    "risk_reward": 2.23,
+    "confidence": 0.75,
+    "reasoning": "Price surged 106 pts to 30095, confirming strong uptrend (EMA21 > EMA75 > EMA150). Previous EMA-bounce level at 29815 is now 280 pts behind. New dynamic support is EMA21 at 30005.96 (89 pts below). Stochastic cooled from 83.4 to 59.81 (neutral), removing overbought concern. Psychological 30100 sits just 4.75 pts above as natural target. A pullback to EMA21 offers 2.23:1 R/R with 40-pt stop. Setup age reset to 0 bars - waiting for price to reach entry level.",
+    "setup_age_bars": 1
   },
   "short_assessment": {
     "status": "waiting",
     "setup_type": "LEVEL_TRADE",
-    "order_type": "STOP",
-    "entry_plan": 30000.0,
-    "stop_plan": 30040.0,
-    "raw_target": 29850.0,
-    "target_plan": 29855.0,
-    "risk_reward": 3.62,
-    "confidence": 0.65,
-    "reasoning": "Stochastic is overbought (83.4) suggesting a possible mean\u2011reversion short. The nearest resistance is the psychological level 30000. A short would be placed as a stop order just above 30000, betting on a rejection. No bearish FVG is nearby and EMA21 is below price, so we lack a strong structural short bias. We wait for price to break above 30000 before the entry becomes valid."
+    "order_type": "LIMIT",
+    "entry_plan": 30100.0,
+    "stop_plan": 30140.0,
+    "raw_target": 30005.96,
+    "target_plan": 30010.96,
+    "risk_reward": 2.23,
+    "confidence": 0.45,
+    "reasoning": "Price broke above 30000 (previous short trigger) but continued higher, invalidating the mean-reversion thesis. Stochastic normalized to 59.81. Only short rationale is potential rejection at psychological 30100 (4.75 pts away). However, strong EMA alignment and lack of bearish FVG/confluence make this counter-trend. Target at EMA21 (30006) +5pt buffer. Low confidence - only valid if clear rejection candle forms at 30100. Setup age: 0 bars.",
+    "setup_age_bars": 1
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 1,
-  "last_updated": "2026-06-24T22:00:42.772431"
+  "bars_since_last_trade": 2,
+  "last_updated": "2026-06-24T22:18:59.923377"
 }
