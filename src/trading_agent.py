@@ -107,74 +107,81 @@ class TradingAgent:
             The model's response text, or raises after all retries
         """
         base_delay = 2  # Start with 2 second delay
+        last_error = "unknown"
 
-        for attempt in range(max_retries):
-            try:
-                response = self.client.chat.completions.create(
-                    model=self.model,
-                    max_tokens=self.max_tokens,
-                    temperature=self.temperature,
-                    messages=[{
-                        "role": "user",
-                        "content": prompt
-                    }]
-                )
-                # Free OpenRouter models can return HTTP 200 with choices=None (an
-                # error object in the body) or null content when an upstream provider
-                # rate-limits/errors. Guard against it instead of crashing on
-                # choices[0] ('NoneType' object is not subscriptable), and retry since
-                # it's transient.
-                choices = getattr(response, "choices", None)
-                content = choices[0].message.content if choices else None
-                if content:
-                    return content
+        # Walk the model chain: primary first, then fallbacks. A model that is
+        # missing (404) is skipped immediately; transient errors / empty responses
+        # are retried with backoff before moving to the next model.
+        for model in self.models:
+            is_fallback = model != self.models[0]
+            for attempt in range(max_retries):
+                try:
+                    response = self.client.chat.completions.create(
+                        model=model,
+                        max_tokens=self.max_tokens,
+                        temperature=self.temperature,
+                        messages=[{
+                            "role": "user",
+                            "content": prompt
+                        }]
+                    )
+                    # Free OpenRouter models can return HTTP 200 with choices=None (an
+                    # error object in the body) or null content when an upstream
+                    # provider rate-limits/errors. Guard against it instead of crashing
+                    # on choices[0] ('NoneType' object is not subscriptable).
+                    choices = getattr(response, "choices", None)
+                    content = choices[0].message.content if choices else None
+                    if content:
+                        if is_fallback:
+                            logger.warning(f"Using FALLBACK model '{model}' (primary unavailable)")
+                        return content
 
-                err = getattr(response, "error", None) or getattr(response, "model_extra", None)
-                logger.warning(
-                    f"Empty completion (attempt {attempt + 1}/{max_retries}) - "
-                    f"200 OK but no usable content. Body: {err or response}"
-                )
-                if attempt < max_retries - 1:
-                    delay = base_delay * (2 ** attempt)
-                    print(f"\n[WAIT] Model returned empty response. Retrying in {delay}s... (attempt {attempt + 1}/{max_retries})")
-                    time.sleep(delay)
-                    continue
-                raise RuntimeError(f"Empty completion after {max_retries} attempts: {err or 'no choices'}")
+                    err = getattr(response, "error", None) or getattr(response, "model_extra", None)
+                    last_error = f"empty completion from {model}: {err or response}"
+                    logger.warning(
+                        f"Empty completion from '{model}' (attempt {attempt + 1}/{max_retries}) - "
+                        f"200 OK but no usable content. Body: {err or response}"
+                    )
+                    if attempt < max_retries - 1:
+                        delay = base_delay * (2 ** attempt)
+                        print(f"\n[WAIT] '{model}' returned empty. Retrying in {delay}s... ({attempt + 1}/{max_retries})")
+                        time.sleep(delay)
+                        continue
+                    break  # retries exhausted for this model -> try next fallback
 
-            except APIError as e:
-                error_message = str(e)
+                except APIError as e:
+                    error_message = str(e)
+                    last_error = f"{model}: {error_message}"
+                    low = error_message.lower()
 
-                # Check if it's an overload error (529) or rate limit
-                is_retryable = (
-                    'overloaded' in error_message.lower() or
-                    '529' in error_message or
-                    'rate_limit' in error_message.lower() or
-                    '429' in error_message
-                )
+                    # Model missing / invalid (404, no endpoints) -> no point retrying
+                    # the same model; jump straight to the next fallback.
+                    if ('404' in error_message or 'not found' in low
+                            or 'no endpoints' in low or 'not a valid model' in low):
+                        logger.error(f"Model '{model}' unavailable: {error_message} -> trying next fallback")
+                        break
 
-                if is_retryable and attempt < max_retries - 1:
-                    # Calculate exponential backoff delay
-                    delay = base_delay * (2 ** attempt)
+                    is_retryable = (
+                        'overloaded' in low or '529' in error_message
+                        or 'rate_limit' in low or '429' in error_message
+                        or 'timeout' in low or '502' in error_message or '503' in error_message
+                    )
+                    if is_retryable and attempt < max_retries - 1:
+                        delay = base_delay * (2 ** attempt)
+                        logger.warning(f"API error '{model}' (attempt {attempt + 1}/{max_retries}): {error_message}")
+                        print(f"\n[WAIT] API busy on '{model}'. Retrying in {delay}s... ({attempt + 1}/{max_retries})")
+                        time.sleep(delay)
+                    else:
+                        logger.error(f"API error '{model}' (giving up on this model): {error_message}")
+                        break  # try next fallback
 
-                    logger.warning(f"API Error (attempt {attempt + 1}/{max_retries}): {error_message}")
-                    logger.warning(f"Retrying in {delay} seconds...")
+                except Exception as e:
+                    last_error = f"{model}: {e}"
+                    logger.error(f"Unexpected error querying '{model}': {e} -> trying next fallback")
+                    break  # try next fallback
 
-                    # Show user-friendly message
-                    print(f"\n[WAIT] API temporarily overloaded. Retrying in {delay}s... (attempt {attempt + 1}/{max_retries})")
-
-                    time.sleep(delay)
-                else:
-                    # Last attempt or non-retryable error
-                    logger.error(f"API Error (final attempt): {error_message}")
-                    raise
-
-            except Exception as e:
-                # Non-API errors should not be retried
-                logger.error(f"Unexpected error querying Claude: {e}")
-                raise
-
-        # Should never reach here, but just in case
-        raise Exception("Max retries exceeded")
+        # Every model in the chain failed.
+        raise RuntimeError(f"All LLM models failed [{', '.join(self.models)}]. Last error: {last_error}")
 
     def build_prompt(
         self,
