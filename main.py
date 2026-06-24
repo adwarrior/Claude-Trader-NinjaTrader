@@ -363,40 +363,45 @@ class TradingOrchestrator:
                             primary = decision_data['primary_decision']
 
                             if primary != 'NONE':
-                                # Get the chosen setup
-                                chosen_setup = decision_data['long_setup'] if primary == 'LONG' else decision_data['short_setup']
+                                # Only arm a new entry when flat with nothing working.
+                                if self.in_position or self.pending_entry:
+                                    state = 'in position' if self.in_position else 'resting entry working'
+                                    logger.info(f"NO NEW ENTRY: {state} - skipping {primary} setup")
+                                else:
+                                    # Get the chosen setup
+                                    chosen_setup = decision_data['long_setup'] if primary == 'LONG' else decision_data['short_setup']
 
-                                # Build signal format for legacy signal generator
-                                signal = {
-                                    'decision': primary,
-                                    'entry': chosen_setup['entry'],
-                                    'stop': chosen_setup['stop'],
-                                    'target': chosen_setup['target'],
-                                    'risk_reward': chosen_setup['risk_reward'],
-                                    'confidence': chosen_setup['confidence'],
-                                    'reasoning': decision_data['overall_reasoning'],
-                                    'setup_type': 'fvg_only'
-                                }
+                                    # Build signal format for the signal generator
+                                    signal = {
+                                        'decision': primary,
+                                        'order_type': chosen_setup.get('order_type', 'LIMIT'),
+                                        'entry': chosen_setup['entry'],
+                                        'stop': chosen_setup['stop'],
+                                        'target': chosen_setup['target'],
+                                        'risk_reward': chosen_setup['risk_reward'],
+                                        'confidence': chosen_setup['confidence'],
+                                        'reasoning': decision_data['overall_reasoning'],
+                                        'setup_type': chosen_setup.get('setup_type', 'fvg_only')
+                                    }
 
-                                # Log signal generation attempt
-                                logger.info(f"GENERATING TRADE SIGNAL: {primary} @ {signal['entry']:.0f}")
-                                logger.info(f"R:R {signal['risk_reward']:.2f}:1 | Confidence: {signal['confidence']:.2f}")
+                                    logger.info(f"ARMING RESTING ENTRY: {primary} {signal['order_type']} @ {signal['entry']:.0f}")
+                                    logger.info(f"R:R {signal['risk_reward']:.2f}:1 | Confidence: {signal['confidence']:.2f}")
 
-                                # Generate signal
-                                try:
-                                    success = self.signal_generator.generate_signal(signal)
-
-                                    if success:
-                                        self.daily_trades += 1
-                                        # Mark trade as executed in analysis manager
-                                        self.analysis_manager.mark_trade_executed(primary)
-                                        logger.info(f"SIGNAL WRITTEN TO CSV: {primary} trade signal saved")
-                                    else:
-                                        logger.warning(f"SIGNAL GENERATION FAILED: Could not write to CSV")
-                                except Exception as e:
-                                    logger.error(f"ERROR WRITING SIGNAL: {e}")
-                                    import traceback
-                                    logger.error(traceback.format_exc())
+                                    try:
+                                        pending = self.signal_generator.place_entry(signal)
+                                        if pending:
+                                            pending['bar_time'] = current_bar_time
+                                            pending['bars_alive'] = 0
+                                            self.pending_entry = pending
+                                            # Mark trade as executed in analysis manager
+                                            self.analysis_manager.mark_trade_executed(primary)
+                                            logger.info(f"RESTING ENTRY ARMED: {primary} order working at {signal['entry']:.2f}")
+                                        else:
+                                            logger.warning("ENTRY PLACEMENT FAILED: validation or bridge error")
+                                    except Exception as e:
+                                        logger.error(f"ERROR PLACING ENTRY: {e}")
+                                        import traceback
+                                        logger.error(traceback.format_exc())
                             else:
                                 logger.info("NO TRADE: Primary decision is NONE")
                         else:
