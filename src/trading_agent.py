@@ -39,6 +39,11 @@ class TradingAgent:
         llm_cfg = config.get('llm', {})
         self.base_url = llm_cfg.get('base_url', 'https://inference-api.nousresearch.com/v1')
         self.model = llm_cfg.get('model', 'nvidia/nemotron-3-ultra:free')
+        # Fallback chain: if the primary model 404s / errors / returns empty, the
+        # query method walks these in order. Different providers so one upstream
+        # outage doesn't kill them all. Primary is always tried first; dedupe.
+        fallbacks = llm_cfg.get('fallback_models', [])
+        self.models = [self.model] + [m for m in fallbacks if m != self.model]
         self.temperature = llm_cfg.get('temperature', 0.3)
         self.max_tokens = llm_cfg.get('max_tokens', 8192)
         key_env = llm_cfg.get('api_key_env', 'NOUS_API_KEY')
