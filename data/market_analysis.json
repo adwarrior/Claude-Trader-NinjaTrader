@@ -1,7 +1,7 @@
 {
-  "current_bar_index": 8,
+  "current_bar_index": 9,
   "overall_bias": "bearish",
-  "waiting_for": "Price to bounce to EMA21 (29843) for EMA_BOUNCE short entry - price extended lower to 29813, further from entry",
+  "waiting_for": "Price to bounce to EMA21 (29839.87) for EMA_BOUNCE short entry - price extended lower to 29809, further from entry",
   "long_assessment": {
     "status": "none",
     "setup_type": null,
@@ -11,21 +11,21 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "NO LONG SETUP - Strong downtrend intact (EMA21 29843 < EMA75 30166 < EMA150 30250). Price at 29813.25, only 13.25 pts above 29800 psych level but stochastic at 51.85 is neutral, not oversold. No bullish FVGs below current price. Nearest bearish FVG above is 275 pts away at 30054-30093. A bounce at 29800 would be counter-trend in a powerful downtrend - low probability without oversold momentum or bullish structure. No confluence for long entry."
+    "reasoning": "NO LONG SETUP - Strong downtrend intact (EMA21 29839.87 < EMA75 30157.05 < EMA150 30244.24). Price at 29809.25, only 9.25 pts above 29800 psych level but stochastic at 52.49 is neutral, not oversold. No bullish FVGs below current price. Nearest bearish FVG above is 278.75 pts away at 30054-30093 (newly formed). A bounce at 29800 would be counter-trend in a powerful downtrend - low probability without oversold momentum or bullish structure. No confluence for long entry."
   },
   "short_assessment": {
     "status": "waiting",
     "setup_type": "EMA_BOUNCE",
-    "entry_plan": 29843.03,
-    "stop_plan": 29868.0,
+    "entry_plan": 29839.87,
+    "stop_plan": 29865.0,
     "raw_target": 29790.0,
     "target_plan": 29795.0,
     "risk_reward": 1.92,
     "confidence": 0.68,
-    "reasoning": "EMA_BOUNCE SETUP CONTINUES DEVELOPING (Age: 4 bars) - Price extended lower to 29813.25, now 29.78 pts below EMA21 (29843.03, down 2.3 pts from prior bar). EMA21 acts as dynamic resistance in strong downtrend (EMA21 < EMA75 < EMA150). Stochastic at 51.85 has room to decline from neutral. Entry at EMA21 ~29843, stop 25 pts above at 29868 (beyond EMA21 + buffer), target 29790 (bullish FVG bottom at 29790-29797.25) with 5pt buffer = 29795. Risk 25, Reward 48 = 1.92:1 R/R. Price moved 9.5 pts FURTHER from entry since last bar (was 20.3 pts away, now 29.8 pts). Setup remains valid but requires patience - continuing to wait for corrective bounce to EMA21 resistance zone.",
-    "setup_age_bars": 4
+    "reasoning": "EMA_BOUNCE SETUP CONTINUES DEVELOPING (Age: 5 bars) - Price extended lower to 29809.25, now 30.62 pts below EMA21 (29839.87, down 3.16 pts from prior bar). EMA21 acts as dynamic resistance in strong downtrend (EMA21 < EMA75 < EMA150). Stochastic at 52.49 has room to decline from neutral. Entry at EMA21 ~29839.87, stop 25 pts above at 29865 (beyond EMA21 + buffer), target 29790 (bullish FVG bottom at 29790-29797.25) with 5pt buffer = 29795. Risk 25, Reward 45 = 1.8:1 R/R. Price moved 0.84 pts FURTHER from entry since last bar (was 29.78 pts away, now 30.62 pts). Setup remains valid but requires patience - continuing to wait for corrective bounce to EMA21 resistance zone.",
+    "setup_age_bars": 5
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 8,
-  "last_updated": "2026-06-24T10:30:31.303820"
+  "bars_since_last_trade": 9,
+  "last_updated": "2026-06-24T11:04:50.278815"
 }
