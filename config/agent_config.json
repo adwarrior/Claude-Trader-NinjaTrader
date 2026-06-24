@@ -37,9 +37,9 @@
     "base_url": "https://openrouter.ai/api/v1",
     "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
     "fallback_models": [
+      "openai/gpt-oss-120b:free",
       "meta-llama/llama-3.3-70b-instruct:free",
-      "qwen/qwen3-next-80b-a3b-instruct:free",
-      "openai/gpt-oss-120b:free"
+      "qwen/qwen3-next-80b-a3b-instruct:free"
     ],
     "api_key_env": "OPENROUTER_API_KEY",
     "temperature": 0.3,
