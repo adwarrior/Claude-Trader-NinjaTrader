@@ -127,6 +127,61 @@ class NTBridge:
     # Convenience: entry + bracket
     # ------------------------------------------------------------------
 
+    def entry_order(
+        self,
+        instrument: str,
+        direction: Literal["LONG", "SHORT", "BUY", "SELL"],
+        quantity: int,
+        order_type: Literal["LIMIT", "STOP"],
+        price: float,
+        tif: str = "GTC",
+    ) -> str:
+        """
+        Place a *resting* entry order (LIMIT or STOP) at `price` and return a
+        caller-supplied ORDERID so the order can be cancelled later.
+
+        NO bracket is attached here. Unlike a market entry, a resting entry
+        fills at an unknown future time, so the SL/TP cannot be sent up front
+        (before the fill they have no position to protect and would act as
+        wrong-way entries). Send them via bracket_exits() once the entry is
+        known/inferred to have filled.
+
+        order_type semantics:
+          LIMIT - rest at a better price than market (pullback/rejection entries)
+          STOP  - trigger as price trades through `price` (breakout entries)
+        """
+        action = "BUY" if direction in ("LONG", "BUY") else "SELL"
+        order_id = f"entry-{uuid.uuid4().hex[:12]}"
+        if order_type == "LIMIT":
+            self._place(instrument, action, quantity, "LIMIT",
+                        limit=price, tif=tif, order_id=order_id)
+        else:
+            self._place(instrument, action, quantity, "STOPMARKET",
+                        stop=price, tif=tif, order_id=order_id)
+        return order_id
+
+    def bracket_exits(
+        self,
+        instrument: str,
+        direction: Literal["LONG", "SHORT", "BUY", "SELL"],
+        quantity: int,
+        stop_loss: float,
+        take_profit: float,
+    ) -> dict:
+        """
+        Submit the protective SL stop + TP limit as an OCO pair *after* an entry
+        has filled. `direction` is the position's direction (LONG/SHORT); the
+        exits are placed on the opposite side. The SL and TP share an OCO id so
+        NT cancels the surviving leg when either fills.
+        """
+        action = "BUY" if direction in ("LONG", "BUY") else "SELL"
+        exit_action = "SELL" if action == "BUY" else "BUY"
+        oco = f"oco-{uuid.uuid4().hex[:12]}"
+
+        sl = self.stop_market_order(instrument, exit_action, quantity, stop_loss, tif="GTC", oco=oco)
+        tp = self.limit_order(instrument, exit_action, quantity, take_profit, tif="GTC", oco=oco)
+        return {"sl": sl, "tp": tp, "oco": oco}
+
     def bracket_order(
         self,
         instrument: str,
@@ -137,16 +192,13 @@ class NTBridge:
     ) -> dict:
         """
         Market entry + SL stop + TP limit. The SL and TP share an OCO id so NT
-        cancels the surviving leg when either fills (both directions).
+        cancels the surviving leg when either fills (both directions). Retained
+        as a fallback / for callers that want an immediate market fill.
         """
         action = "BUY" if direction in ("LONG", "BUY") else "SELL"
-        exit_action = "SELL" if action == "BUY" else "BUY"
-        oco = f"oco-{uuid.uuid4().hex[:12]}"
-
         entry = self.market_order(instrument, action, quantity, tif="DAY")
-        sl = self.stop_market_order(instrument, exit_action, quantity, stop_loss, tif="GTC", oco=oco)
-        tp = self.limit_order(instrument, exit_action, quantity, take_profit, tif="GTC", oco=oco)
-        return {"entry": entry, "sl": sl, "tp": tp, "oco": oco}
+        exits = self.bracket_exits(instrument, direction, quantity, stop_loss, take_profit)
+        return {"entry": entry, **exits}
 
     # ------------------------------------------------------------------
     # Internal: write the OIF file
