@@ -12,7 +12,7 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The nearest bullish FVG (29480\u201129507) is 155 points above current price (29347). A long would require a strong upward move against the clear downtrend (EMA21 < EMA75 < EMA150) and there is no bullish momentum (stochastic 56.5, neutral). No EMA bounce or level break is imminent, so no viable long setup exists."
+    "reasoning": "The only bullish opportunity is the bearish FVG above (29480\u201129507) which would require a long to fill it. The gap is 194 points away, price is deep in a strong downtrend (EMA21 < EMA75 < EMA150), stochastic is oversold (28.8) and there is no bullish momentum or EMA support nearby. No entry level is defined, so no viable long setup exists."
   },
   "short_assessment": {
     "status": "none",
@@ -24,9 +24,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "A short EMA\u2011bounce would need price to rise to EMA21 (29504.99) and then reject. Price is currently 158 points below that level and moving further away. There are no overbought stochastic conditions, no bearish FVG below, and no psychological resistance break. Hence no short entry criteria are met."
+    "reasoning": "A short EMA\u2011bounce would need price to rise to EMA21 (29364.94) and then reject. Current price is 56.7 points below EMA21 and moving further away, with no overbought stochastic or bearish FVG below to target. No clear entry or stop level is present, so no short setup is available."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 6,
-  "last_updated": "2026-06-24T20:15:04.880887"
+  "bars_since_last_trade": 7,
+  "last_updated": "2026-06-24T20:41:16.137566"
 }
