@@ -496,6 +496,8 @@ class TradingOrchestrator:
 
                     # Clear screen
                     os.system('cls' if os.name == 'nt' else 'clear')
+                    print(self._status_banner(current_price))
+                    print("-" * 60)
 
                     if feed_stale:
                         # Throttle the WARNING log to once/min so it's loud in the log
