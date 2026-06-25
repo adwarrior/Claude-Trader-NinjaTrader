@@ -296,6 +296,7 @@ class TradingOrchestrator:
                             logger.info(f"POSITION EXIT inferred ({exit_kind}): {pos['direction']} "
                                         f"entry {pos['entry']:.2f} | SL {pos['stop']:.2f} | TP {pos['target']:.2f}")
                             self.in_position = None
+                            self._save_state()
                     elif self.pending_entry:
                         pend = self.pending_entry
                         if self._check_entry_fill(pend, bar_high, bar_low):
@@ -305,6 +306,7 @@ class TradingOrchestrator:
                             self.in_position = pend
                             self.pending_entry = None
                             self.daily_trades += 1
+                            self._save_state()
                         else:
                             pend['bars_alive'] += 1
                             if pend['bars_alive'] >= self.max_pending_bars:
@@ -312,6 +314,7 @@ class TradingOrchestrator:
                                             f"(unfilled @ {pend['entry']:.2f}) - cancelling")
                                 self.signal_generator.cancel_entry(pend)
                                 self.pending_entry = None
+                            self._save_state()
 
                     # Get active FVGs
                     active_fvgs = [fvg for fvg in fvg_display.active_fvgs if not fvg.get('filled', False)]
@@ -429,6 +432,7 @@ class TradingOrchestrator:
                                             pending['bar_time'] = current_bar_time
                                             pending['bars_alive'] = 0
                                             self.pending_entry = pending
+                                            self._save_state()
                                             # Mark trade as executed in analysis manager
                                             self.analysis_manager.mark_trade_executed(primary)
                                             logger.info(f"RESTING ENTRY ARMED: {primary} order working at {signal['entry']:.2f}")
