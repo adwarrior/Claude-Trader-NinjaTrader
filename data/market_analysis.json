@@ -1,19 +1,19 @@
 {
   "current_bar_index": 1,
   "overall_bias": "bullish",
-  "waiting_for": "Pullback to EMA75 (~30001.50) or 30000 psychological level for EMA_BOUNCE/LEVEL_TRADE long entry",
+  "waiting_for": "Pullback to EMA21 (~30018.53) for EMA_BOUNCE long entry",
   "long_assessment": {
-    "status": "ready",
+    "status": "waiting",
     "setup_type": "EMA_BOUNCE",
     "order_type": "LIMIT",
-    "entry_plan": 30001.5,
-    "stop_plan": 29961.5,
+    "entry_plan": 30018.53,
+    "stop_plan": 29980.0,
     "raw_target": 30100.0,
     "target_plan": 30095.0,
-    "risk_reward": 2.34,
-    "confidence": 0.7,
-    "reasoning": "Uptrend remains intact (EMA21 30014.34 > EMA75 30001.45 > EMA150 29975.01). Price pulled back 4.34 pts below EMA21 to 30010, deeper than prior bar, but holds above EMA75 and 30000 key level. Stochastic cooled to 57.22 from 62.57, removing overbought risk. A resting LIMIT at rising EMA75 (30001.50) captures the next leg of the pullback with 40-pt stop (below EMA150) targeting 30100 major psychological level (30095 after 5pt buffer). Risk 40 pts, reward 93.5 pts = 2.34:1 R/R. Confluence: EMA75 dynamic support + 30000 psychological magnet + trend alignment.",
-    "setup_age_bars": 1
+    "risk_reward": 1.98,
+    "confidence": 0.72,
+    "reasoning": "Price is currently 22.97 pts above EMA21 in a strong up\u2011trend (EMA21 > EMA75 > EMA150). A pullback to EMA21 would provide a clean limit entry with confluence from the bullish EMA structure, the 30000 psychological level just below, and neutral stochastic (49.7). Target is the next major psychological level at 30100 (final target 30095 after 5\u2011pt buffer). Stop is placed below EMA150 to give the trade breathing room, yielding ~2:1 R/R.",
+    "setup_age_bars": 2
   },
   "short_assessment": {
     "status": "none",
@@ -24,10 +24,10 @@
     "raw_target": null,
     "target_plan": null,
     "risk_reward": null,
-    "confidence": 0.0,
-    "reasoning": "No viable short setup. Trend strongly bullish with perfectly aligned EMAs. Stochastic (57.22) neutral, not overbought. Nearest bullish FVG below (29950-29967) is 60 pts away \u2014 too distant for counter-trend R/R. Price holding above 30000 psychological support. Shorting a healthy uptrend pullback lacks confluence and violates trend-following discipline."
+    "confidence": null,
+    "reasoning": "No viable short confluence: trend is bullish, EMAs are aligned upward, stochastic is neutral, and the nearest bullish FVG below is 86 pts away, making risk/reward unattractive. No price action suggests a reversal or counter\u2011trend move at this time."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 2,
-  "last_updated": "2026-06-25T04:55:30.071422"
+  "bars_since_last_trade": 3,
+  "last_updated": "2026-06-25T05:21:51.148177"
 }
