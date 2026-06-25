@@ -1,18 +1,19 @@
 {
   "current_bar_index": 1,
-  "overall_bias": "bullish",
-  "waiting_for": "Price to pull back to EMA75 for a clean EMA bounce long entry (now ready)",
+  "overall_bias": "bearish",
+  "waiting_for": "No quality setup \u2013 price has moved away from the EMA\u2011bounce long and the nearby FVG\u2011fill short does not meet the minimum 1.3 R/R requirement.",
   "long_assessment": {
-    "status": "ready",
-    "setup_type": "EMA_BOUNCE",
-    "order_type": "LIMIT",
-    "entry_plan": 30031.47,
-    "stop_plan": 29991.47,
-    "raw_target": 30100.0,
-    "target_plan": 30095.0,
-    "risk_reward": 1.59,
-    "confidence": 0.71,
-    "reasoning": "The market remains in a strong up\u2011trend (EMA21 > EMA75 > EMA150). Price has pulled back to just above EMA75 (6.3 pts above), providing a high\u2011probability bounce. EMA75 acts as dynamic support and aligns with the 30000 psychological level (only 31 pts below EMA75). Stochastic is neutral (40.5) with room to turn upward, supporting continuation. The entry is a LIMIT at EMA75, stop 40 pts below EMA75 to give the trade breathing room, and target set at the next major resistance (psychological 30100). After applying the 5\u2011point buffer the R/R is 1.59, meeting the minimum 1.3 requirement. Confidence is above the 0.65 threshold."
+    "status": "none",
+    "setup_type": null,
+    "order_type": null,
+    "entry_plan": null,
+    "stop_plan": null,
+    "raw_target": null,
+    "target_plan": null,
+    "risk_reward": null,
+    "confidence": 0.0,
+    "reasoning": "The previous EMA\u2011bounce long required price to pull back to EMA75 (~30015). Current price is 29983.75, 31.5 points below EMA75, breaking the entry premise. No other bullish confluence (FVG, momentum, level break) is present, so the long setup is discarded.",
+    "setup_age_bars": 1
   },
   "short_assessment": {
     "status": "none",
@@ -24,9 +25,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "No bearish confluence exists. The nearest bullish FVG below is 374 pts away, and there is no bearish EMA resistance or overbought stochastic signal. The price is above EMA75 and below EMA21, indicating continued bullish bias. Therefore no valid short setup is present."
+    "reasoning": "A bullish FVG below (29950.25\u201129966.75) could be used for a short fill, but the calculated R/R (\u22480.3\u20110.6) is far below the required 1.3. Stochastic is low (25.5) indicating oversold conditions, not supporting a short. EMA structure shows a weak downtrend but no clear short entry level meets the risk/reward or confidence thresholds."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 1,
-  "last_updated": "2026-06-25T01:54:53.639361"
+  "bars_since_last_trade": 2,
+  "last_updated": "2026-06-25T02:21:06.446008"
 }
