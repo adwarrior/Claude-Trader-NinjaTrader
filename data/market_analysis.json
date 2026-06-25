@@ -1,19 +1,19 @@
 {
-  "current_bar_index": 5,
+  "current_bar_index": 6,
   "overall_bias": "bullish",
-  "waiting_for": "Pullback to EMA21 (~30070) for EMA_BOUNCE long entry",
+  "waiting_for": "Price to reach EMA75 (~30031) for EMA_BOUNCE long entry",
   "long_assessment": {
-    "status": "waiting",
+    "status": "none",
     "setup_type": "EMA_BOUNCE",
-    "order_type": null,
-    "entry_plan": 30069.92,
-    "stop_plan": 30029.92,
-    "raw_target": 30185.0,
-    "target_plan": 30180.0,
-    "risk_reward": 2.75,
-    "confidence": 0.72,
-    "reasoning": "The up\u2011trend remains strong (EMA21 > EMA75 > EMA150). Price is still above EMA21 but has not yet pulled back to the EMA21 level (30069.92). The EMA21 pullback continues to be the most reliable entry point, offering clear support, a 40\u2011point stop, and >2.5:1 R/R after the 5\u2011point target buffer. Stochastic is neutral (58.5) and the 30000 psychological level remains supportive. No new bearish confluence has appeared, so we keep waiting for the pullback.",
-    "setup_age_bars": 4
+    "order_type": "LIMIT",
+    "entry_plan": 30031.03,
+    "stop_plan": 29991.03,
+    "raw_target": 30180.0,
+    "target_plan": 30175.0,
+    "risk_reward": 3.6,
+    "confidence": 0.75,
+    "reasoning": "Price has pulled back below EMA21 (30079.89) to 30045.75, delivering the deeper pullback we were waiting for. In a strong uptrend (EMA21 > EMA75 > EMA150), the EMA75 at 30031.03 is the next logical support zone \u2014 only 14.7 points below current price. Stochastic at 45.18 is neutral with room to turn up, and the 30000 psychological level sits just 31 points below EMA75, adding confluence. A LIMIT order at EMA75 (30031.03) captures the bounce with a 40-point stop (29991.03) below the psych level, yielding a 3.6:1 R/R after the 5-point target buffer. The setup has matured from 'waiting' to 'ready' because the entry level is now clearly defined at EMA75.",
+    "setup_age_bars": 0
   },
   "short_assessment": {
     "status": "none",
@@ -24,10 +24,10 @@
     "raw_target": null,
     "target_plan": null,
     "risk_reward": null,
-    "confidence": null,
-    "reasoning": "No bearish Fair Value Gap or EMA resistance is within a reasonable distance. Stochastic is not overbought, and price is well above EMA21 in a clear up\u2011trend. Therefore no valid short setup exists at this bar."
+    "confidence": 0.0,
+    "reasoning": "No bearish structure in place. Nearest bearish FVG is 706 points above at 30680\u201330756. Price remains in a clear uptrend (EMA21 > EMA75 > EMA150), stochastic is neutral (45.18), and the 30000 psych level below acts as support, not resistance. No valid short setup exists."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 5,
-  "last_updated": "2026-06-25T01:25:28.559867"
+  "bars_since_last_trade": 0,
+  "last_updated": "2026-06-25T01:28:20.331653"
 }
