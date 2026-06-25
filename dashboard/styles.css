@@ -1,0 +1,103 @@
+/* Claude-Trader monitor — design tokens (mirrors strategy-platform-v2 design-system)
+   Dark trading-terminal aesthetic. Amber primary, teal secondary, mono for numbers. */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg-base:      oklch(11% 0.012 240);
+  --bg-surface:   oklch(16% 0.016 240);
+  --bg-elevated:  oklch(20% 0.018 240);
+  --bg-overlay:   oklch(24% 0.02 240);
+  --border-subtle: oklch(26% 0.02 240);
+  --border-mid:    oklch(32% 0.022 240);
+  --border-strong: oklch(42% 0.025 240);
+  --fg-primary:   oklch(94% 0.005 240);
+  --fg-secondary: oklch(65% 0.012 240);
+  --fg-muted:     oklch(44% 0.012 240);
+  --fg-inverse:   oklch(10% 0.01 240);
+  --accent-amber:      oklch(78% 0.18 75);
+  --accent-amber-dim:  oklch(65% 0.15 75);
+  --accent-teal:       oklch(72% 0.145 195);
+  --color-profit:      oklch(78% 0.17 145);
+  --color-profit-dim:  oklch(68% 0.19 145 / 0.15);
+  --color-loss:        oklch(70% 0.2 25);
+  --color-loss-dim:    oklch(60% 0.22 25 / 0.15);
+  --color-warning:     oklch(80% 0.17 75);
+  --color-info:        oklch(70% 0.155 250);
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Cascadia Code', monospace;
+  --radius-md: 5px; --radius-lg: 8px; --radius-full: 9999px;
+}
+
+/* ---- Streamlit host overrides (dark, tight) ---- */
+.stApp { background: var(--bg-base); }
+.block-container { padding-top: 2.2rem; padding-bottom: 2rem; max-width: 1400px; }
+#MainMenu, footer, header { visibility: hidden; }
+section.main > div { gap: 0.6rem; }
+
+/* ---- shared component styles ---- */
+.ct-card {
+  background: var(--bg-surface); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg); padding: 16px 18px; margin-bottom: 14px;
+}
+.ct-h4 {
+  font-family: var(--font-body); font-size: 12px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-secondary);
+  margin: 0 0 12px;
+}
+.ct-num { font-family: var(--font-mono); }
+.ct-muted { color: var(--fg-secondary); }
+.ct-profit { color: var(--color-profit); }
+.ct-loss { color: var(--color-loss); }
+
+/* status banner */
+.ct-status-row { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.ct-state-pill {
+  font-family: var(--font-display); font-size: 15px; font-weight: 600;
+  padding: 6px 14px; border-radius: var(--radius-full); letter-spacing: 0.02em;
+}
+.ct-state-flat    { background: var(--bg-elevated); color: var(--fg-secondary); border:1px solid var(--border-mid);}
+.ct-state-pending { background: oklch(80% 0.17 75 / 0.15); color: var(--accent-amber); border:1px solid oklch(78% 0.18 75 / 0.4);}
+.ct-state-long    { background: var(--color-profit-dim); color: var(--color-profit); border:1px solid oklch(68% 0.19 145 / 0.4);}
+.ct-state-short   { background: var(--color-loss-dim); color: var(--color-loss); border:1px solid oklch(60% 0.22 25 / 0.4);}
+.ct-kv { display: flex; flex-direction: column; gap: 2px; }
+.ct-kv .k { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-muted); }
+.ct-kv .v { font-family: var(--font-mono); font-size: 16px; color: var(--fg-primary); }
+.ct-mode { margin-left: auto; font-family: var(--font-mono); font-size: 11px; padding: 3px 9px; border-radius: var(--radius-md); }
+.ct-mode-live { background: var(--color-loss-dim); color: var(--color-loss); }
+.ct-mode-dry  { background: var(--bg-elevated); color: var(--fg-secondary); }
+
+/* metric strip */
+.ct-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); gap: 12px; }
+.ct-metric { background: var(--bg-elevated); border:1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 10px 12px; }
+.ct-metric .lbl { font-size: 10px; letter-spacing:0.08em; text-transform:uppercase; color: var(--fg-muted); margin-bottom:4px; }
+.ct-metric .val { font-family: var(--font-mono); font-size: 22px; font-weight:600; }
+
+/* table */
+.ct-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.ct-table th {
+  text-align: right; font-family: var(--font-body); font-weight: 600; font-size: 10px;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg-muted);
+  padding: 6px 10px; border-bottom: 1px solid var(--border-mid); position: sticky; top: 0; background: var(--bg-surface);
+}
+.ct-table th:first-child, .ct-table td:first-child { text-align: left; }
+.ct-table td { font-family: var(--font-mono); padding: 6px 10px; border-bottom: 1px solid var(--border-subtle); text-align: right; color: var(--fg-primary); }
+.ct-table tr:hover td { background: var(--bg-elevated); }
+.ct-tag { font-family: var(--font-mono); font-size: 10px; padding: 1px 6px; border-radius: var(--radius-md); }
+.ct-tag-long  { background: var(--color-profit-dim); color: var(--color-profit); }
+.ct-tag-short { background: var(--color-loss-dim); color: var(--color-loss); }
+.ct-tag-win   { background: var(--color-profit-dim); color: var(--color-profit); }
+.ct-tag-loss  { background: var(--color-loss-dim); color: var(--color-loss); }
+.ct-tag-flat  { background: var(--bg-elevated); color: var(--fg-secondary); }
+
+/* decision panel */
+.ct-assess { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.ct-assess .side { background: var(--bg-elevated); border:1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px; }
+.ct-assess .side h5 { margin:0 0 8px; font-family: var(--font-display); font-size: 13px; color: var(--fg-secondary); }
+.ct-badge { font-size: 10px; letter-spacing:0.06em; text-transform:uppercase; padding:2px 8px; border-radius: var(--radius-full); }
+.ct-badge-ready   { background: var(--color-profit-dim); color: var(--color-profit); }
+.ct-badge-waiting { background: oklch(80% 0.17 75 / 0.15); color: var(--accent-amber); }
+.ct-badge-none    { background: var(--bg-overlay); color: var(--fg-muted); }
+.ct-reason { font-size: 12px; line-height: 1.5; color: var(--fg-secondary); margin-top: 8px; }
+.ct-conf-bar { height: 5px; background: var(--bg-overlay); border-radius: var(--radius-full); overflow:hidden; margin-top:6px; }
+.ct-conf-bar > div { height: 100%; background: var(--accent-teal); }
