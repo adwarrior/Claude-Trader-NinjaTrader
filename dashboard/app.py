@@ -14,6 +14,7 @@ import streamlit as st
 
 import data_layer as dl
 import components as ui
+import chart as ch
 
 st.set_page_config(page_title="Claude-Trader Monitor", layout="wide",
                    initial_sidebar_state="collapsed")
@@ -22,6 +23,7 @@ st.set_page_config(page_title="Claude-Trader Monitor", layout="wide",
 st.html(f"<style>{(Path(__file__).parent / 'styles.css').read_text()}</style>")
 
 REFRESH_SECS = 5
+CHART_REFRESH_SECS = 15  # hourly bars change slowly; redraw less often
 
 st.html("<h1 style='font-family:var(--font-display);color:var(--fg-primary);"
         "margin:0 0 4px'>Claude-Trader <span style='color:var(--accent-amber)'>Monitor</span></h1>"
