@@ -1,19 +1,19 @@
 {
-  "current_bar_index": 3,
+  "current_bar_index": 1,
   "overall_bias": "bullish",
-  "waiting_for": "Pullback to EMA21 (~30025) for long entry, or break above 30100 for momentum continuation",
+  "waiting_for": "Pullback to EMA21 (~30032) for long entry, or break above 30100 for momentum continuation",
   "long_assessment": {
     "status": "waiting",
     "setup_type": "EMA_BOUNCE",
     "order_type": "LIMIT",
-    "entry_plan": 30025.57,
+    "entry_plan": 30032.0,
     "stop_plan": 29990.0,
     "raw_target": 30100.0,
     "target_plan": 30095.0,
-    "risk_reward": 1.95,
+    "risk_reward": 1.5,
     "confidence": 0.7,
-    "reasoning": "Strong uptrend with aligned EMAs (EMA21 > EMA75 > EMA150). Price has rallied 36 pts from the EMA75 pierce to 30046.50, now extended 21 pts above EMA21. Previous EMA75 long setup invalidated by strong move up. New setup: wait for pullback to EMA21 at 30025.57 for trend-continuation long. Stop at 29990 (below EMA150 29994.67 and 30000 psych level confluence) gives 35.57 pts risk. Target at 30100 psych level (raw), final target 30095 after 5pt buffer. Reward 69.43 pts. R/R 1.95:1 exceeds 1.3 minimum. Stochastic 50.31 neutral - room to run. Setup age: 1 bar (first bar identifying this pullback level).",
-    "setup_age_bars": 2
+    "reasoning": "Strong uptrend remains intact with EMAs aligned (EMA21 30032 > EMA75 30019.54 > EMA150 29996.87). Price has extended further to 30059, now 27 pts above EMA21 (was 21 pts). The pullback setup is still valid but entry level has moved up with EMA21. Stop at 29990 remains below EMA150 (29996.87) and 30000 psych level confluence. Target at 30100 psych level (raw), final 30095 after 5pt buffer. Risk 42 pts, reward 63 pts, R/R 1.5:1 meets minimum. Stochastic 51.41 neutral - room to run. Setup age: 2 bars (tracking since previous bar). Price has not yet provided the pullback entry.",
+    "setup_age_bars": 3
   },
   "short_assessment": {
     "status": "none",
@@ -25,9 +25,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "Strong uptrend intact with all EMAs aligned and price above them. No reversal signals, divergence, or EMA breakdown. Nearest bullish FVG at 29950-29967 is 96 pts below - too distant for viable counter-trend short. Bearish FVG at 30680+ is 700+ pts away - irrelevant. Shorting into strong momentum without clear reversal structure is low probability. Will reassess if price breaks EMA21 then EMA75 with momentum shift."
+    "reasoning": "Strong uptrend with all EMAs aligned and price well above them. No reversal signals, divergence, or EMA breakdown. Nearest bullish FVG at 29950-29967 is 104 pts below - too distant for viable counter-trend short. Bearish FVG at 30680+ is 700+ pts away - irrelevant. Shorting into strong momentum without clear reversal structure is low probability. Will reassess if price breaks EMA21 then EMA75 with momentum shift."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 3,
-  "last_updated": "2026-06-25T05:54:13.810894"
+  "bars_since_last_trade": 4,
+  "last_updated": "2026-06-25T05:57:43.041977"
 }
