@@ -27,9 +27,22 @@ Requires `streamlit`, `pandas` (already in the bot's environment).
 - **Latest decision** — bias + long/short assessments with reasoning, from `market_analysis.json`.
 - **Trade history** — reconstructed from the log; dry-run trades shown but excluded from P&L.
 
-## Roadmap
+## Phase 2 — chart
 
-- **Phase 2** — price + levels chart (hourly candles, EMAs, FVGs, active entry/SL/TP) via themed Plotly.
-- **Phase 3** — controls: pause/resume, cancel working order, flatten (confirm-gated; respects `dry_run`).
+Themed Plotly: hourly candles, EMA21/75/150, FVG zones (bot's exact 3-candle rule,
+unfilled solid / filled dimmed), active entry/SL/TP lines + live-price marker.
+Refreshes every 15s (hourly bars change slowly).
+
+## Phase 3 — controls
+
+Request/execute design: the dashboard only writes `data/bot_control.json`; the bot
+reads it each loop and executes, so there's no two-process race over orders/state.
+
+- **Pause new entries** — bot keeps managing any open trade but arms nothing new.
+- **Cancel order** / **Flatten** — confirm-gated popovers; queued as one-shot
+  commands the bot actions within ~5s. Both respect `dry_run` (log-only in dry-run).
+
+> Requires the updated `main.py` (control-channel hook) — **restart the bot** once
+> after pulling these changes for the controls to take effect.
 
 P&L assumes NQ full-size at $20/point; override with `execution.point_value` in `agent_config.json`.

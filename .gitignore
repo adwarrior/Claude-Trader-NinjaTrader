@@ -37,6 +37,7 @@ logs/
 data/*.csv
 data/*.csv:Zone.Identifier
 data/bot_state.json
+data/bot_control.json
 !data/.gitkeep
 
 # IDE
