@@ -12,7 +12,7 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The nearest bearish FVG above is 96.75 points away (entry at 30231). Price is still 102 points below that level, with no EMA pull\u2011back, no breakout, and stochastic neutral. No confluence has emerged, so the long setup remains invalid."
+    "reasoning": "The nearest bearish FVG above is 131.25 points away (entry would be near 30296). Price is 131 points below that level, with no EMA pull\u2011back, no breakout, and stochastic neutral. No confluence has emerged, so the long FVG_FILL setup remains invalid."
   },
   "short_assessment": {
     "status": "none",
@@ -24,9 +24,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The bullish FVG below sits 59.5 points above the current price. The price is above the gap, the downtrend persists (EMA21 < EMA75 < EMA150), and stochastic is only mildly bullish. No pull\u2011back to the gap or level break has occurred, so the short FVG_FILL setup is not viable."
+    "reasoning": "The bullish FVG below sits 95 points above the current price. To activate a short FVG_FILL we need price to drop into the gap (around 30070). The market is still above the gap, trend is down but price is holding above EMA150 and stochastic is only mildly bullish. No pull\u2011back to the gap or level break has occurred, so the short setup is not viable."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 8,
-  "last_updated": "2026-06-25T11:00:49.895134"
+  "bars_since_last_trade": 9,
+  "last_updated": "2026-06-25T12:01:37.549935"
 }
