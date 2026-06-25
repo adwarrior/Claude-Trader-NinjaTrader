@@ -1,7 +1,7 @@
 {
-  "current_bar_index": 14,
+  "current_bar_index": 1,
   "overall_bias": "bearish",
-  "waiting_for": "No quality setup \u2013 price is far below EMA21 and the nearest bullish FVG is 474 points away. Waiting for price to approach a confluence level (EMA bounce, FVG fill, or psychological level) before considering a trade.",
+  "waiting_for": "No quality setup \u2013 price remains 242.5 points below EMA21 and 451.5 points below the nearest bullish FVG. Need price to approach EMA21, the 29700 psychological level, or the FVG zone before a viable entry appears.",
   "long_assessment": {
     "status": "none",
     "setup_type": null,
@@ -12,7 +12,7 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The only bullish opportunity is a long FVG_FILL above 29,776, which is 474 points away and requires a strong upward move that conflicts with the prevailing downtrend (EMA21 < EMA75 < EMA150). Stochastic is neutral and there is no EMA pull\u2011back or psychological level to act as a near\u2011term catalyst. Therefore no long setup meets the minimum R/R or confidence threshold."
+    "reasoning": "The only long opportunity is a FVG_FILL above 29,776.75, which is 451.5 points away. The market is in a strong downtrend (EMA21 < EMA75 < EMA150), stochastic is neutral, and there is no pull\u2011back to EMA21 or a breakout of the 29,700 level. The distance to the entry is too large for a 1.3:1 R/R with reasonable stop size, so the setup does not meet confidence or risk/reward thresholds."
   },
   "short_assessment": {
     "status": "none",
@@ -24,9 +24,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "A short EMA_BOUNCE could be considered at EMA21 (29,927), but price is 2,889 points below that level, meaning a substantial rally would be required before a short entry could be placed. No bearish FVG exists below price, stochastic shows only mild bullishness, and psychological levels (29,600 / 29,700) have not been tested. Consequently, no short setup currently satisfies the risk/reward or confidence criteria."
+    "reasoning": "A short EMA_BOUNCE could be placed at EMA21 (29,903), but price is 2,242.5 points below that level, requiring a large rally before a short entry is possible. No bearish FVG exists below price, stochastic shows no oversold condition, and psychological levels (29,600 / 29,700) have not been tested. Consequently, no short setup satisfies the minimum R/R or confidence criteria."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 14,
-  "last_updated": "2026-06-25T16:00:37.543003"
+  "bars_since_last_trade": 15,
+  "last_updated": "2026-06-25T17:00:23.424133"
 }
