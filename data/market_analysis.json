@@ -1,7 +1,7 @@
 {
-  "current_bar_index": 1,
+  "current_bar_index": 3,
   "overall_bias": "bearish",
-  "waiting_for": "No quality setup \u2013 price has moved away from the EMA\u2011bounce long and the nearby FVG\u2011fill short does not meet the minimum 1.3 R/R requirement.",
+  "waiting_for": "No quality setup \u2013 price is too far from the bullish FVG above for a strong long, and the short FVG below fails the minimum 1.3 R/R requirement.",
   "long_assessment": {
     "status": "none",
     "setup_type": null,
@@ -12,8 +12,7 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The previous EMA\u2011bounce long required price to pull back to EMA75 (~30015). Current price is 29983.75, 31.5 points below EMA75, breaking the entry premise. No other bullish confluence (FVG, momentum, level break) is present, so the long setup is discarded.",
-    "setup_age_bars": 1
+    "reasoning": "The nearest bearish FVG above (30044\u201130052.75) is 65.25 points away. While the raw R/R would be acceptable, the market shows a weak downtrend (EMA21 < EMA75), stochastic is neutral, and there is no additional confluence (no EMA bounce, no level break). The setup lacks sufficient bullish bias to meet the confidence threshold."
   },
   "short_assessment": {
     "status": "none",
@@ -25,9 +24,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "A bullish FVG below (29950.25\u201129966.75) could be used for a short fill, but the calculated R/R (\u22480.3\u20110.6) is far below the required 1.3. Stochastic is low (25.5) indicating oversold conditions, not supporting a short. EMA structure shows a weak downtrend but no clear short entry level meets the risk/reward or confidence thresholds."
+    "reasoning": "The bullish FVG below (29950.25\u201129966.75) is 27.25 points away. A short entry at the current price would give a reward of only ~27 points against a typical 40\u2011point stop, yielding an R/R \u2248 0.68, well below the required 1.3. Stochastic is neutral and EMA structure does not provide clear short support, so the setup is discarded."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 2,
-  "last_updated": "2026-06-25T02:21:06.446008"
+  "bars_since_last_trade": 3,
+  "last_updated": "2026-06-25T02:47:20.009645"
 }
