@@ -186,6 +186,46 @@ def pnl_summary(trades: list[dict]) -> dict:
     }
 
 
+def min_gap_size() -> float:
+    return float(read_config().get("trading_params", {}).get("min_gap_size", 5.0))
+
+
+def compute_fvgs(df: pd.DataFrame) -> list[dict]:
+    """Mirror FairValueGaps.find_fvgs_in_data + is_fvg_filled on the chart bars.
+
+    3-candle window (c1=i-2, c3=i): bullish gap when c3.Low > c1.High, bearish
+    when c3.High < c1.Low, each >= min_gap_size. A zone is 'filled' once a later
+    bar trades back through its far edge.
+    """
+    if df is None or len(df) < 3:
+        return []
+    mn = min_gap_size()
+    out = []
+    n = len(df)
+    for i in range(2, n):
+        c1, c3 = df.iloc[i - 2], df.iloc[i]
+        kind = top = bottom = None
+        if c3["Low"] > c1["High"] and (c3["Low"] - c1["High"]) >= mn:
+            kind, top, bottom = "bullish", c3["Low"], c1["High"]
+        elif c3["High"] < c1["Low"] and (c1["Low"] - c3["High"]) >= mn:
+            kind, top, bottom = "bearish", c1["Low"], c3["High"]
+        if kind is None:
+            continue
+        filled, fill_dt = False, None
+        for j in range(i + 1, n):
+            ch = df.iloc[j]
+            if (kind == "bullish" and ch["Low"] <= bottom) or \
+               (kind == "bearish" and ch["High"] >= top):
+                filled, fill_dt = True, ch["DateTime"]
+                break
+        out.append({
+            "type": kind, "top": float(top), "bottom": float(bottom),
+            "dt_start": c3["DateTime"], "dt_fill": fill_dt,
+            "filled": filled, "gap_size": float(abs(top - bottom)),
+        })
+    return out
+
+
 def equity_curve(trades: list[dict]) -> pd.DataFrame:
     real = [t for t in closed_trades(trades) if not t["dry_run"]]
     rows, cum = [], 0.0
