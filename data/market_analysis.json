@@ -1,7 +1,7 @@
 {
-  "current_bar_index": 1,
+  "current_bar_index": 7,
   "overall_bias": "bearish",
-  "waiting_for": "No quality setup \u2013 previous bullish EMA bounce invalidated by a clear downtrend (EMA21 < EMA75 < EMA150).",
+  "waiting_for": "No quality setup",
   "long_assessment": {
     "status": "none",
     "setup_type": null,
@@ -12,8 +12,7 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The prior long EMA\u2011bounce setup required price to pull back to EMA21 (~30110). EMA21 has now moved far below price (29940) and the EMA hierarchy shows a strong downtrend (EMA21 < EMA75 < EMA150). With trend and momentum turning bearish, there is no confluence for a new long entry.",
-    "setup_age_bars": 5
+    "reasoning": "The only bullish (long) opportunity is the bearish FVG above (30133.25\u201130231.00). It is 102.75 points away, giving a raw target 102.75 points above entry. Even with a 40\u2011point stop, the R/R is ~2.6:1, which meets the minimum, but the setup lacks confluence: price is well below the gap, EMAs indicate a strong downtrend (EMA21 < EMA75 < EMA150), and stochastic is neutral. No EMA pull\u2011back or level\u2011break aligns with a long bias, so we keep the assessment as none."
   },
   "short_assessment": {
     "status": "none",
@@ -25,9 +24,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "A bullish FVG below (30064.75\u201130077.50) exists, but the gap is 73 points away and the projected move to the final target (30069.75) would be only ~8 points, yielding an R/R far below the required 1.3:1. No other short\u2011bias setups (EMA break, momentum, or level trade) meet the risk/reward or confidence thresholds. Therefore no viable short trade at this bar."
+    "reasoning": "The bullish FVG below (30064.75\u201130077.50) is 53.5 points away with a raw target only 8 points beyond the gap, yielding an R/R far below the required 1.3:1. Additionally, the price is above the gap, EMAs confirm a downtrend, and there is no price action indicating a pull\u2011back to the gap or a break of a key level. Therefore no short\u2011bias setup meets the criteria."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 6,
-  "last_updated": "2026-06-25T09:48:32.289566"
+  "bars_since_last_trade": 7,
+  "last_updated": "2026-06-25T10:00:48.542544"
 }
