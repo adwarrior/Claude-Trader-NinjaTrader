@@ -9,3 +9,7 @@ python-dotenv>=1.0.0       # Environment variable management
 
 # Additional dependencies for trading system
 typing-extensions>=4.0.0   # Type hints support
+
+# Monitor dashboard (dashboard/)
+streamlit>=1.37            # dashboard host (fragment-based auto-refresh)
+plotly>=5.20               # price + levels chart
