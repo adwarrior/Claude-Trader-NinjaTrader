@@ -1,19 +1,18 @@
 {
   "current_bar_index": 1,
   "overall_bias": "bullish",
-  "waiting_for": "Pullback to 30100 (flipped support) or EMA21 (30079.82) for long entry; stochastic at 69.75 nearing overbought suggests pullback likely before further upside",
+  "waiting_for": "Price to trigger LIMIT order at 30100 (flipped psychological support) for long entry",
   "long_assessment": {
-    "status": "none",
+    "status": "ready",
     "setup_type": "LEVEL_TRADE",
     "order_type": "LIMIT",
-    "entry_plan": 30100.0,
-    "stop_plan": 30065.0,
-    "raw_target": 30200.0,
-    "target_plan": 30195.0,
+    "entry_plan": 30100,
+    "stop_plan": 30065,
+    "raw_target": 30200,
+    "target_plan": 30195,
     "risk_reward": 2.71,
-    "confidence": 0.65,
-    "reasoning": "Price broke above 30100 psychological level (was resistance, now potential support). A pullback to 30100 offers a LEVEL_TRADE long with confluence: flipped psychological level, 33 pts above EMA21 (30079.82) providing dynamic support confluence, and 26.5 pts above the bullish FVG top (30081.25). LIMIT order at 30100 captures the bounce. Stop at 30065 sits 35 pts below entry, below both the FVG zone (30073.50-30081.25) and EMA21, giving breathing room. Target at 30200 (raw) / 30195 (final with -5 buffer) targets the next major psychological level. R/R = 95/35 = 2.71:1. Stochastic at 69.75 shows momentum but nearing overbought, favoring pullback entry over chase. Confidence 0.65: level just flipped, but strong uptrend and room to 30200 support the setup.",
-    "setup_age_bars": 0
+    "confidence": 0.72,
+    "reasoning": "Price has pulled back to 30099.50, essentially at the 30100 flipped psychological level (was resistance, now support). This completes the pullback we were waiting for. Strong confluence: 1) Flipped 30100 level, 2) EMA21 at 30086.70 (13.3 pts below) providing dynamic support, 3) Fresh bullish FVG at 30073.50-30081.25 (18.75-26.5 pts below) as additional support zone, 4) Strong uptrend (EMA21 > EMA75 > EMA150), 5) Stochastic pulled back to 68.62 from near-overbought, creating room for continuation. LIMIT order at 30100 captures the bounce. Stop at 30065 (35 pts) sits below both FVG zone and EMA21. Target 30200 (raw) / 30195 (final with -5 buffer) targets next psychological level. R/R = 95/35 = 2.71:1. Confidence increased from 0.65 to 0.72 as price reached the planned entry level with all confluence intact."
   },
   "short_assessment": {
     "status": "none",
@@ -25,9 +24,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "No viable short setup. The only structural target is the bullish FVG fill at 30078.50 (final target), 35.25 pts below current price. However, trend is strongly bullish (EMA21 > EMA75 > EMA150), stochastic at 69.75 is not overbought, and a proper stop would require 30+ pts above recent highs (30115+), yielding <1.2:1 R/R \u2014 below 1.3 minimum. The massive bearish FVG at 30680-30756 is 638 pts away, irrelevant for intraday. No counter-trend confluence exists."
+    "reasoning": "No viable short setup. Trend remains strongly bullish (EMA21 > EMA75 > EMA150). Stochastic at 68.62 is not overbought. The only structural downside target is the bullish FVG fill at 30078.50 (final target), 21 pts below current price, but trading against the trend with a stop above recent highs (30115+) would yield <1.2:1 R/R \u2014 below 1.3 minimum. The massive bearish FVG at 30680-30756 is 650+ pts away, irrelevant for intraday. No counter-trend confluence exists."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 0,
-  "last_updated": "2026-06-25T06:46:47.161109"
+  "bars_since_last_trade": 1,
+  "last_updated": "2026-06-25T06:52:13.965608"
 }
