@@ -1,5 +1,5 @@
 {
-  "current_bar_index": 1,
+  "current_bar_index": 12,
   "overall_bias": "bearish",
   "waiting_for": "No quality setup",
   "long_assessment": {
@@ -12,7 +12,7 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The nearest bearish FVG above (30268.75\u201130301.00) is still ~93 points away. Price is well below the gap, there is no pull\u2011back to the EMA cluster, stochastic is neutral, and no psychological level offers a clear breakout or rejection. Without entry proximity or additional confluence, the long FVG_FILL setup remains invalid."
+    "reasoning": "The nearest bearish FVG above is 144 points away (final target 30296). Price at 30152 is still far below the gap, with no pull\u2011back to EMA cluster, neutral stochastic, and no imminent break of the 30200 psychological level. No confluence has improved; therefore the long FVG_FILL remains invalid."
   },
   "short_assessment": {
     "status": "none",
@@ -24,9 +24,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The bullish FVG below (30064.75\u201130077.50) is ~133 points away. Price would need to drop far into the gap before a short entry makes sense, and the projected move to the gap bottom yields an R/R far below the required 1.3:1. EMA21/75/150 remain in a downtrend but do not provide a near\u2011term support bounce at the gap, and stochastic is only mildly bullish. Hence the short FVG_FILL setup is not viable."
+    "reasoning": "The bullish FVG below sits 82 points away (final target 30069.75). While price is above the gap, the distance is still large, EMA21/75 are above price (downtrend) but do not provide a near\u2011term bounce, stochastic is only mildly bullish, and there is no price action at the 30100 psychological level that would add confluence. The setup does not meet the minimum R/R or confidence threshold."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 11,
-  "last_updated": "2026-06-25T14:00:25.659214"
+  "bars_since_last_trade": 12,
+  "last_updated": "2026-06-25T14:25:51.918760"
 }
