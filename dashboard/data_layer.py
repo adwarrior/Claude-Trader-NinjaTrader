@@ -1,0 +1,195 @@
+"""
+Read-only data layer for the Claude-Trader monitor dashboard.
+
+Every function reads files the live bot already writes (bot_state.json,
+market_analysis.json, HistoricalData.csv, LiveFeed.csv) plus reconstructs the
+closed-trade ledger by parsing the bot log. Nothing here mutates bot state, so
+the dashboard cannot interfere with the running system.
+"""
+from __future__ import annotations
+import json
+import re
+from dataclasses import dataclass, asdict
+from pathlib import Path
+from typing import Optional
+
+import pandas as pd
+
+BOT_ROOT = Path(__file__).resolve().parent.parent
+DATA = BOT_ROOT / "data"
+LOG = BOT_ROOT / "logs" / "trading_agent.log"
+CONFIG = BOT_ROOT / "config" / "agent_config.json"
+
+# NQ full-size = $20/point. Overridden by config if a point_value is set.
+DEFAULT_POINT_VALUE = 20.0
+
+
+def _load_json(path: Path) -> dict:
+    try:
+        txt = path.read_text().strip()
+        return json.loads(txt) if txt else {}
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+
+def read_config() -> dict:
+    return _load_json(CONFIG)
+
+
+def point_value() -> float:
+    cfg = read_config().get("execution", {})
+    return float(cfg.get("point_value", DEFAULT_POINT_VALUE))
+
+
+def read_state() -> dict:
+    """Current pending_entry / in_position the bot is tracking."""
+    return _load_json(DATA / "bot_state.json")
+
+
+def read_analysis() -> dict:
+    """Latest LLM decision (overall bias + long/short assessments)."""
+    return _load_json(DATA / "market_analysis.json")
+
+
+def read_price() -> Optional[float]:
+    """Last live price from LiveFeed.csv."""
+    try:
+        df = pd.read_csv(DATA / "LiveFeed.csv")
+        if len(df) and "Last" in df.columns:
+            return float(df.iloc[-1]["Last"])
+    except Exception:
+        pass
+    return None
+
+
+def read_bars(limit: int = 300) -> pd.DataFrame:
+    """Hourly OHLC + EMAs from HistoricalData.csv (deduped, sorted)."""
+    try:
+        df = pd.read_csv(DATA / "HistoricalData.csv")
+        df["DateTime"] = pd.to_datetime(df["DateTime"], format="mixed")
+        df = df.drop_duplicates("DateTime").sort_values("DateTime").tail(limit)
+        return df.reset_index(drop=True)
+    except Exception:
+        return pd.DataFrame()
+
+
+# ---- closed-trade ledger reconstructed from the log -------------------------
+
+@dataclass
+class Trade:
+    armed_at: str
+    side: str            # LONG / SHORT
+    order_type: str      # LIMIT / STOP
+    entry: float
+    stop: float
+    target: float
+    status: str          # FILLED / EXPIRED / OPEN
+    fill_at: str = ""
+    exit_at: str = ""
+    exit_kind: str = ""  # STOP / TARGET
+    exit_price: float = 0.0
+    points: float = 0.0
+    usd: float = 0.0
+    dry_run: bool = False
+
+
+_RE_PLACE_LIVE = re.compile(
+    r"Resting (LIMIT|STOP) entry placed: (LONG|SHORT) @ ([\d.]+).*?SL ([\d.]+) \| TP ([\d.]+)")
+_RE_PLACE_DRY = re.compile(
+    r"\[DRY RUN\] Would place resting (LIMIT|STOP) entry: (LONG|SHORT) .*?@ ([\d.]+) \| SL ([\d.]+) \| TP ([\d.]+)")
+_RE_FILL = re.compile(r"ENTRY FILL inferred: (LONG|SHORT) (LIMIT|STOP) @ ([\d.]+)")
+_RE_EXIT = re.compile(
+    r"POSITION EXIT inferred \((STOP|TARGET)\): (LONG|SHORT) entry ([\d.]+) \| SL ([\d.]+) \| TP ([\d.]+)")
+_RE_EXPIRE = re.compile(r"RESTING ENTRY EXPIRED after \d+ bars \(unfilled @ ([\d.]+)\)")
+_RE_TS = re.compile(r"^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})")
+
+
+def parse_trades(max_lines: int = 60000) -> list[dict]:
+    """Walk the log and stitch armed→fill→exit into a closed-trade ledger."""
+    if not LOG.exists():
+        return []
+    pv = point_value()
+    try:
+        lines = LOG.read_text(errors="replace").splitlines()[-max_lines:]
+    except Exception:
+        return []
+
+    trades: list[Trade] = []
+    cur: Optional[Trade] = None
+
+    def ts(line: str) -> str:
+        m = _RE_TS.match(line)
+        return m.group(1) if m else ""
+
+    for ln in lines:
+        m = _RE_PLACE_LIVE.search(ln) or _RE_PLACE_DRY.search(ln)
+        if m:
+            if cur is not None:        # previous never resolved -> drop as stale
+                pass
+            cur = Trade(armed_at=ts(ln), order_type=m.group(1), side=m.group(2),
+                        entry=float(m.group(3)), stop=float(m.group(4)),
+                        target=float(m.group(5)), status="ARMED",
+                        dry_run="[DRY RUN]" in ln)
+            continue
+        if cur is None:
+            continue
+        m = _RE_FILL.search(ln)
+        if m:
+            cur.status = "OPEN"
+            cur.fill_at = ts(ln)
+            cur.entry = float(m.group(3))
+            continue
+        m = _RE_EXIT.search(ln)
+        if m:
+            cur.exit_kind = m.group(1)
+            cur.exit_at = ts(ln)
+            cur.exit_price = cur.stop if m.group(1) == "STOP" else cur.target
+            sign = 1 if cur.side == "LONG" else -1
+            cur.points = round(sign * (cur.exit_price - cur.entry), 2)
+            cur.usd = round(cur.points * pv, 2)
+            cur.status = "FILLED"
+            trades.append(cur)
+            cur = None
+            continue
+        m = _RE_EXPIRE.search(ln)
+        if m:
+            cur.status = "EXPIRED"
+            trades.append(cur)
+            cur = None
+            continue
+
+    if cur is not None:                # still working/open at end of log
+        trades.append(cur)
+    return [asdict(t) for t in trades]
+
+
+def closed_trades(trades: list[dict]) -> list[dict]:
+    return [t for t in trades if t["status"] == "FILLED"]
+
+
+def pnl_summary(trades: list[dict]) -> dict:
+    """Aggregate stats over FILLED (real, non-dry-run) trades."""
+    real = [t for t in closed_trades(trades) if not t["dry_run"]]
+    wins = [t for t in real if t["points"] > 0]
+    losses = [t for t in real if t["points"] <= 0]
+    total_pts = round(sum(t["points"] for t in real), 2)
+    total_usd = round(sum(t["usd"] for t in real), 2)
+    return {
+        "n": len(real),
+        "wins": len(wins),
+        "losses": len(losses),
+        "win_rate": round(100 * len(wins) / len(real), 1) if real else 0.0,
+        "total_pts": total_pts,
+        "total_usd": total_usd,
+        "best": round(max((t["points"] for t in real), default=0.0), 2),
+        "worst": round(min((t["points"] for t in real), default=0.0), 2),
+    }
+
+
+def equity_curve(trades: list[dict]) -> pd.DataFrame:
+    real = [t for t in closed_trades(trades) if not t["dry_run"]]
+    rows, cum = [], 0.0
+    for i, t in enumerate(real, 1):
+        cum += t["usd"]
+        rows.append({"n": i, "exit_at": t["exit_at"], "cum_usd": round(cum, 2)})
+    return pd.DataFrame(rows)
