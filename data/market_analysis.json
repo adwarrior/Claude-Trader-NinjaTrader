@@ -1,19 +1,19 @@
 {
-  "current_bar_index": 5,
-  "overall_bias": "bullish",
-  "waiting_for": "Resting LIMIT order fill at EMA21 (30110.33) - price has pulled back to our entry zone",
+  "current_bar_index": 1,
+  "overall_bias": "bearish",
+  "waiting_for": "No quality setup \u2013 previous bullish EMA bounce invalidated by a clear downtrend (EMA21 < EMA75 < EMA150).",
   "long_assessment": {
-    "status": "ready",
-    "setup_type": "EMA_BOUNCE",
-    "order_type": "LIMIT",
-    "entry_plan": 30110.33,
-    "stop_plan": 30065.0,
-    "raw_target": 30195.0,
-    "target_plan": 30190.0,
-    "risk_reward": 1.76,
-    "confidence": 0.75,
-    "reasoning": "Price has pulled back exactly to the EMA21 (30110.33) as anticipated, creating the EMA_BOUNCE setup we've been tracking for 4 bars. The 30100 psychological level sits just 10 pts below, adding confluence. Strong uptrend intact (EMA21 > EMA75 > EMA150). Stochastic at 64.17 is neutral-bullish with room to run. LIMIT order at EMA21 captures the pullback entry. Stop at 30065 (below EMA75 at 30078) provides 45 pts breathing room. Target at prior high 30195 minus 5-pt buffer = 30190. Risk/Reward ~1.76:1 exceeds 1.3 minimum. Setup quality improved as price reached our planned entry zone.",
-    "setup_age_bars": 4
+    "status": "none",
+    "setup_type": null,
+    "order_type": null,
+    "entry_plan": null,
+    "stop_plan": null,
+    "raw_target": null,
+    "target_plan": null,
+    "risk_reward": null,
+    "confidence": 0.0,
+    "reasoning": "The prior long EMA\u2011bounce setup required price to pull back to EMA21 (~30110). EMA21 has now moved far below price (29940) and the EMA hierarchy shows a strong downtrend (EMA21 < EMA75 < EMA150). With trend and momentum turning bearish, there is no confluence for a new long entry.",
+    "setup_age_bars": 5
   },
   "short_assessment": {
     "status": "none",
@@ -25,9 +25,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "No quality short setup. Nearest bullish FVG below (30073.5-30081.25) is 31 pts away but against a strong EMA-aligned uptrend. Stochastic at 64.17 is not overbought. Psychological level at 30200 above is 90 pts away. Counter-trend shorts into a strong uptrend with EMA alignment have low probability. Price is at long entry zone, not short territory."
+    "reasoning": "A bullish FVG below (30064.75\u201130077.50) exists, but the gap is 73 points away and the projected move to the final target (30069.75) would be only ~8 points, yielding an R/R far below the required 1.3:1. No other short\u2011bias setups (EMA break, momentum, or level trade) meet the risk/reward or confidence thresholds. Therefore no viable short trade at this bar."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 5,
-  "last_updated": "2026-06-25T07:43:24.698380"
+  "bars_since_last_trade": 6,
+  "last_updated": "2026-06-25T09:48:32.289566"
 }
