@@ -1,19 +1,19 @@
 {
-  "current_bar_index": 1,
+  "current_bar_index": 4,
   "overall_bias": "bullish",
-  "waiting_for": "Pullback to EMA21 (~30018.53) for EMA_BOUNCE long entry",
+  "waiting_for": "Price to pull back to EMA21 at 30029.32 for EMA_BOUNCE long entry (now only 4.93 points away)",
   "long_assessment": {
-    "status": "waiting",
+    "status": "none",
     "setup_type": "EMA_BOUNCE",
     "order_type": "LIMIT",
-    "entry_plan": 30018.53,
+    "entry_plan": 30029.32,
     "stop_plan": 29980.0,
     "raw_target": 30100.0,
     "target_plan": 30095.0,
-    "risk_reward": 1.98,
-    "confidence": 0.72,
-    "reasoning": "Price is currently 22.97 pts above EMA21 in a strong up\u2011trend (EMA21 > EMA75 > EMA150). A pullback to EMA21 would provide a clean limit entry with confluence from the bullish EMA structure, the 30000 psychological level just below, and neutral stochastic (49.7). Target is the next major psychological level at 30100 (final target 30095 after 5\u2011pt buffer). Stop is placed below EMA150 to give the trade breathing room, yielding ~2:1 R/R.",
-    "setup_age_bars": 2
+    "risk_reward": 1.33,
+    "confidence": 0.75,
+    "reasoning": "Price pulled back 7.25 pts toward EMA21, now only 4.93 pts away. Strong uptrend (EMA21>EMA75>EMA150), 30000 psych level 29 pts below EMA21 adds confluence. Stochastic at 60.87 supports bullish momentum. New bearish FVG above at 30044-30052.75 provides additional upside target confluence. Stop at 29980 below EMA150 gives breathing room. R/R 1.33:1 meets threshold.",
+    "setup_age_bars": 0
   },
   "short_assessment": {
     "status": "none",
@@ -24,10 +24,10 @@
     "raw_target": null,
     "target_plan": null,
     "risk_reward": null,
-    "confidence": null,
-    "reasoning": "No viable short confluence: trend is bullish, EMAs are aligned upward, stochastic is neutral, and the nearest bullish FVG below is 86 pts away, making risk/reward unattractive. No price action suggests a reversal or counter\u2011trend move at this time."
+    "confidence": 0.0,
+    "reasoning": "Trend remains strongly bullish with aligned EMAs. Price above all EMAs. Stochastic at 60.87 shows bullish momentum. Nearest bullish FVG below is 79 pts away at 29950-29966, offering poor R/R for a counter-trend short. No reversal price action or divergence present."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 3,
-  "last_updated": "2026-06-25T05:21:51.148177"
+  "bars_since_last_trade": 0,
+  "last_updated": "2026-06-25T05:25:32.642975"
 }
