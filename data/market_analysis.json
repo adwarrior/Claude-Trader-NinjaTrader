@@ -1,7 +1,7 @@
 {
-  "current_bar_index": 4,
+  "current_bar_index": 5,
   "overall_bias": "bearish",
-  "waiting_for": "No quality setup \u2013 price still far from both FVGs, EMA alignment weak, and stochastic neutral.",
+  "waiting_for": "Rally to EMA75/30000 zone for short entry with adequate R/R, or drop to EMA21 for potential long bounce \u2013 currently in no-man's-land between EMAs with neutral stochastic",
   "long_assessment": {
     "status": "none",
     "setup_type": null,
@@ -12,7 +12,7 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The nearest bearish FVG above (30044\u201130052.75) is still ~50.5 points away. With price at 29997.25 the potential reward after the 5\u2011point buffer would be ~45 points, requiring a stop >55 points to meet the 1.3 R/R minimum \u2013 an unattractive risk. EMA21 is just above EMA75, indicating only a weak downtrend, and stochastic is neutral. No EMA bounce, level break, or other confluence exists, so the long setup remains invalid."
+    "reasoning": "New bearish FVG above (29998.50-30005.00) is only 13.5 pts to top; final target 30000 after 5-pt buffer yields ~13.5 pts reward from current 29986.50. Even with a tight 10-pt stop R/R \u2248 1.35, but 10-pt stops are unrealistic for NQ volatility. A proper 30-40 pt stop gives R/R < 0.5. EMA21 at 29982 is 4 pts below \u2013 price would need to pull back to it for an EMA_BOUNCE long, but trend is down (EMA21 < EMA75) and stochastic neutral, so counter-trend long lacks confluence. No level break or momentum signal. Long setup invalid."
   },
   "short_assessment": {
     "status": "none",
@@ -24,9 +24,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The bullish FVG below (29950.25\u201129966.75) is ~42 points below current price. To target the bottom of the gap (final target 29955.25) the reward is ~42 points; with a typical 40\u2011point stop the R/R would be <1.1, below the required 1.3. EMA structure shows a weak downtrend but no clear EMA bounce or level rejection, and stochastic remains neutral. Therefore the short FVG_FILL does not meet the quality criteria."
+    "reasoning": "Bullish FVG below (29950.25-29966.75) final target 29955.25 is 31.25 pts away. With a standard 40-pt stop R/R = 0.78; need ~24-pt stop for 1.3 R/R \u2013 too tight for breathing room. Better entry would be a rally to EMA75 (29993.74) or 30000 psych level: entry ~29994, reward ~38.5 pts, stop ~30000 (6 pts) still too tight, stop ~30010 (16 pts) gives R/R ~2.4 but 16 pts is marginal. Stochastic at 46 not overbought, so no momentum confirmation for short. EMA structure shows weak downtrend but price is between EMAs \u2013 no clear EMA_BOUNCE rejection yet. Waiting for price to tag resistance zone (EMA75/30000) before considering short."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 4,
-  "last_updated": "2026-06-25T03:11:06.653848"
+  "bars_since_last_trade": 5,
+  "last_updated": "2026-06-25T03:43:45.136376"
 }
