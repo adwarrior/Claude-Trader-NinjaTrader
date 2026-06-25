@@ -120,7 +120,43 @@ class TradingOrchestrator:
         self.in_position = None
         self.max_pending_bars = self.config.get('execution', {}).get('max_pending_bars', 3)
 
+        # Persist the state machine so a restart mid-trade recovers instead of
+        # thinking it is flat (OIF is write-only -> no fill read-back from NT).
+        self.state_file = Path(self.config.get('execution', {}).get('state_file', 'data/bot_state.json'))
+        self._load_state()
+
         # Initialization complete
+
+    def _save_state(self) -> None:
+        """Persist pending_entry / in_position to disk (datetimes -> str)."""
+        try:
+            self.state_file.parent.mkdir(parents=True, exist_ok=True)
+            with open(self.state_file, 'w') as f:
+                json.dump({'pending_entry': self.pending_entry,
+                           'in_position': self.in_position}, f, default=str, indent=2)
+        except Exception as e:
+            logger.error(f"Failed to save bot state to {self.state_file}: {e}")
+
+    def _load_state(self) -> None:
+        """Restore pending_entry / in_position from disk on startup."""
+        if not self.state_file.exists():
+            return
+        try:
+            with open(self.state_file, 'r') as f:
+                state = json.load(f)
+            self.pending_entry = state.get('pending_entry')
+            self.in_position = state.get('in_position')
+            if self.in_position:
+                pos = self.in_position
+                logger.warning(f"RECOVERED OPEN POSITION from state file: {pos['direction']} "
+                               f"entry {pos['entry']} | SL {pos['stop']} | TP {pos['target']}. "
+                               f"NT still manages the live OCO; no new entries until it resolves.")
+            if self.pending_entry:
+                pend = self.pending_entry
+                logger.warning(f"RECOVERED PENDING ENTRY from state file: {pend['direction']} "
+                               f"{pend['order_type']} @ {pend['entry']} (id={pend.get('order_id')}).")
+        except Exception as e:
+            logger.error(f"Failed to load bot state from {self.state_file}: {e}")
 
     def _check_entry_fill(self, pend: dict, bar_high: float, bar_low: float) -> bool:
         """Infer whether a resting entry would have filled within this bar's range."""
