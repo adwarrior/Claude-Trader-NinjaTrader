@@ -37,8 +37,8 @@ class TradingAgent:
         self.config = config
 
         llm_cfg = config.get('llm', {})
-        self.base_url = llm_cfg.get('base_url', 'https://inference-api.nousresearch.com/v1')
-        self.model = llm_cfg.get('model', 'nvidia/nemotron-3-ultra:free')
+        self.base_url = llm_cfg.get('base_url', 'https://openrouter.ai/api/v1')
+        self.model = llm_cfg.get('model', 'nvidia/nemotron-3-ultra-550b-a55b:free')
         # Fallback chain: if the primary model 404s / errors / returns empty, the
         # query method walks these in order. Different providers so one upstream
         # outage doesn't kill them all. Primary is always tried first; dedupe.
