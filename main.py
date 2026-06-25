@@ -125,7 +125,50 @@ class TradingOrchestrator:
         self.state_file = Path(self.config.get('execution', {}).get('state_file', 'data/bot_state.json'))
         self._load_state()
 
+        # Dashboard control channel: the monitor only WRITES requests here; the
+        # bot is the sole executor (reads each loop, acts, clears) so there is no
+        # two-process race over orders or state.
+        self.control_file = Path(self.config.get('execution', {}).get('control_file', 'data/bot_control.json'))
+        self.paused = False
+
         # Initialization complete
+
+    def _read_control(self) -> None:
+        """Honour pause + one-shot commands (cancel_entry / flatten) from the dashboard."""
+        if not self.control_file.exists():
+            self.paused = False
+            return
+        try:
+            with open(self.control_file, 'r') as f:
+                ctrl = json.load(f)
+        except (json.JSONDecodeError, OSError):
+            return
+
+        self.paused = bool(ctrl.get('paused', False))
+        cmd = ctrl.get('command')
+        if not cmd:
+            return
+
+        if cmd == 'cancel_entry' and self.pending_entry:
+            logger.warning("CONTROL: cancel_entry requested from dashboard")
+            self.signal_generator.cancel_entry(self.pending_entry)
+            self.pending_entry = None
+            self._save_state()
+        elif cmd == 'flatten':
+            logger.warning("CONTROL: flatten requested from dashboard")
+            if self.pending_entry:
+                self.signal_generator.cancel_entry(self.pending_entry)
+                self.pending_entry = None
+            self.signal_generator.close_position()
+            self.in_position = None
+            self._save_state()
+
+        # Clear the one-shot command, keep the paused flag.
+        try:
+            with open(self.control_file, 'w') as f:
+                json.dump({'paused': self.paused, 'command': None}, f, indent=2)
+        except OSError as e:
+            logger.error(f"Failed to clear control command: {e}")
 
     def _save_state(self) -> None:
         """Persist pending_entry / in_position to disk (datetimes -> str)."""
