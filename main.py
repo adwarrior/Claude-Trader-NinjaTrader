@@ -309,6 +309,9 @@ class TradingOrchestrator:
 
         try:
             while True:
+                # Honour dashboard pause / one-shot commands every iteration.
+                self._read_control()
+
                 # Reload historical data to check for updates
                 historical_df = pd.read_csv('data/HistoricalData.csv')
                 # NT writes ISO timestamps (2026-06-11 20:37:00) while older
@@ -462,8 +465,10 @@ class TradingOrchestrator:
                             primary = decision_data['primary_decision']
 
                             if primary != 'NONE':
-                                # Only arm a new entry when flat with nothing working.
-                                if self.in_position or self.pending_entry:
+                                # Only arm a new entry when flat, with nothing working, and not paused.
+                                if self.paused:
+                                    logger.info(f"NO NEW ENTRY: PAUSED by dashboard - skipping {primary} setup")
+                                elif self.in_position or self.pending_entry:
                                     state = 'in position' if self.in_position else 'resting entry working'
                                     logger.info(f"NO NEW ENTRY: {state} - skipping {primary} setup")
                                 else:
