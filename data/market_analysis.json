@@ -1,7 +1,7 @@
 {
-  "current_bar_index": 3,
+  "current_bar_index": 4,
   "overall_bias": "bearish",
-  "waiting_for": "No quality setup \u2013 price is too far from the bullish FVG above for a strong long, and the short FVG below fails the minimum 1.3 R/R requirement.",
+  "waiting_for": "No quality setup \u2013 price still far from both FVGs, EMA alignment weak, and stochastic neutral.",
   "long_assessment": {
     "status": "none",
     "setup_type": null,
@@ -12,7 +12,7 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The nearest bearish FVG above (30044\u201130052.75) is 65.25 points away. While the raw R/R would be acceptable, the market shows a weak downtrend (EMA21 < EMA75), stochastic is neutral, and there is no additional confluence (no EMA bounce, no level break). The setup lacks sufficient bullish bias to meet the confidence threshold."
+    "reasoning": "The nearest bearish FVG above (30044\u201130052.75) is still ~50.5 points away. With price at 29997.25 the potential reward after the 5\u2011point buffer would be ~45 points, requiring a stop >55 points to meet the 1.3 R/R minimum \u2013 an unattractive risk. EMA21 is just above EMA75, indicating only a weak downtrend, and stochastic is neutral. No EMA bounce, level break, or other confluence exists, so the long setup remains invalid."
   },
   "short_assessment": {
     "status": "none",
@@ -24,9 +24,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The bullish FVG below (29950.25\u201129966.75) is 27.25 points away. A short entry at the current price would give a reward of only ~27 points against a typical 40\u2011point stop, yielding an R/R \u2248 0.68, well below the required 1.3. Stochastic is neutral and EMA structure does not provide clear short support, so the setup is discarded."
+    "reasoning": "The bullish FVG below (29950.25\u201129966.75) is ~42 points below current price. To target the bottom of the gap (final target 29955.25) the reward is ~42 points; with a typical 40\u2011point stop the R/R would be <1.1, below the required 1.3. EMA structure shows a weak downtrend but no clear EMA bounce or level rejection, and stochastic remains neutral. Therefore the short FVG_FILL does not meet the quality criteria."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 3,
-  "last_updated": "2026-06-25T02:47:20.009645"
+  "bars_since_last_trade": 4,
+  "last_updated": "2026-06-25T03:11:06.653848"
 }
