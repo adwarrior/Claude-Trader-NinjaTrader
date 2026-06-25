@@ -1,5 +1,5 @@
 {
-  "current_bar_index": 7,
+  "current_bar_index": 1,
   "overall_bias": "bearish",
   "waiting_for": "No quality setup",
   "long_assessment": {
@@ -12,7 +12,7 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The only bullish (long) opportunity is the bearish FVG above (30133.25\u201130231.00). It is 102.75 points away, giving a raw target 102.75 points above entry. Even with a 40\u2011point stop, the R/R is ~2.6:1, which meets the minimum, but the setup lacks confluence: price is well below the gap, EMAs indicate a strong downtrend (EMA21 < EMA75 < EMA150), and stochastic is neutral. No EMA pull\u2011back or level\u2011break aligns with a long bias, so we keep the assessment as none."
+    "reasoning": "The nearest bearish FVG above is 96.75 points away (entry at 30231). Price is still 102 points below that level, with no EMA pull\u2011back, no breakout, and stochastic neutral. No confluence has emerged, so the long setup remains invalid."
   },
   "short_assessment": {
     "status": "none",
@@ -24,9 +24,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The bullish FVG below (30064.75\u201130077.50) is 53.5 points away with a raw target only 8 points beyond the gap, yielding an R/R far below the required 1.3:1. Additionally, the price is above the gap, EMAs confirm a downtrend, and there is no price action indicating a pull\u2011back to the gap or a break of a key level. Therefore no short\u2011bias setup meets the criteria."
+    "reasoning": "The bullish FVG below sits 59.5 points above the current price. The price is above the gap, the downtrend persists (EMA21 < EMA75 < EMA150), and stochastic is only mildly bullish. No pull\u2011back to the gap or level break has occurred, so the short FVG_FILL setup is not viable."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 7,
-  "last_updated": "2026-06-25T10:00:48.542544"
+  "bars_since_last_trade": 8,
+  "last_updated": "2026-06-25T11:00:49.895134"
 }
