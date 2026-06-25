@@ -1,19 +1,18 @@
 {
-  "current_bar_index": 8,
+  "current_bar_index": 1,
   "overall_bias": "bullish",
-  "waiting_for": "LIMIT order fill at EMA21 (29996.42) for long entry; price pulled back to within 2.6 pts of EMA21 as anticipated",
+  "waiting_for": "Pullback to EMA21 (30014.10) for LIMIT fill on EMA_BOUNCE long entry",
   "long_assessment": {
-    "status": "none",
+    "status": "ready",
     "setup_type": "EMA_BOUNCE",
     "order_type": "LIMIT",
-    "entry_plan": 29996.42,
-    "stop_plan": 29956.9,
-    "raw_target": 30100.0,
-    "target_plan": 30095.0,
-    "risk_reward": 2.49,
-    "confidence": 0.8,
-    "reasoning": "Price has pulled back to within 2.58 pts of EMA21 (29996.42) as anticipated in prior analysis. EMA structure remains strongly bullish (EMA21 > EMA75 > EMA150). Stochastic at 62.67 shows ample room before overbought. The 30000 psychological level sits just 1 pt above current price and 3.6 pts above entry \u2014 a break/retest adds confluence. Targeting 30100 major psychological level (30095 after 5pt buffer) yields 98.6 pt reward vs 39.5 pt risk (stop 10 pts below EMA150 at 29966.90). R/R 2.49:1 exceeds 1.3 minimum. Resting LIMIT at EMA21 captures the pullback entry without requiring confirmation candle.",
-    "setup_age_bars": 0
+    "entry_plan": 30014.1,
+    "stop_plan": 29974.1,
+    "raw_target": 30100,
+    "target_plan": 30095,
+    "risk_reward": 2.02,
+    "confidence": 0.75,
+    "reasoning": "Strong uptrend intact (EMA21 > EMA75 > EMA150). Previous LIMIT at old EMA21 (29996) was not filled as price rallied ~30 pts. EMA21 has risen to 30014.10; price now sits 15.15 pts above it. A pullback to the rising EMA21 offers a trend-following entry with defined risk. Targeting the 30100 major psychological level (30095 after 5pt buffer) provides 80.9 pts reward vs 40 pts risk (stop 40 pts below entry, ~10 pts below EMA150). R/R 2.02:1 exceeds 1.3 minimum. Stochastic at 62.57 shows ample upside room before overbought. Resting LIMIT at EMA21 captures the pullback without requiring confirmation candle."
   },
   "short_assessment": {
     "status": "none",
@@ -25,9 +24,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "No viable short setup. Nearest bullish FVG below (29950.25-29966.75) is 43.75 pts away \u2014 too distant for acceptable R/R on a counter-trend fill trade. EMA alignment is strongly bullish, stochastic is not overbought (62.67), and price is holding above the 30000 psychological level. Shorting into a healthy uptrend pullback lacks confluence and violates trend-following discipline."
+    "reasoning": "No viable short setup. Trend is strongly bullish with aligned EMAs. Stochastic (62.57) is not overbought. Nearest bullish FVG below (29950-29967) is 74 pts away \u2014 too distant for acceptable R/R on a counter-trend fill. Price holds well above the 30000 psychological level. Shorting a healthy uptrend pullback lacks confluence and violates trend-following discipline."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 0,
-  "last_updated": "2026-06-25T04:32:15.727659"
+  "bars_since_last_trade": 1,
+  "last_updated": "2026-06-25T04:37:40.313509"
 }
