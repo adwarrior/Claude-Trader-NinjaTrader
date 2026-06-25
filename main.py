@@ -183,6 +183,23 @@ class TradingOrchestrator:
             return 'TARGET'
         return None
 
+    def _status_banner(self, current_price=None) -> str:
+        """One-line at-a-glance state line shown above the detailed display."""
+        if self.in_position:
+            p = self.in_position
+            state = (f"IN POSITION {p['direction']} @ {p['entry']:.2f} "
+                     f"| SL {p['stop']:.2f} TP {p['target']:.2f}")
+        elif self.pending_entry:
+            p = self.pending_entry
+            state = (f"PENDING {p['direction']} {p['order_type']} @ {p['entry']:.2f} "
+                     f"| SL {p['stop']:.2f} TP {p['target']:.2f} "
+                     f"| age {p.get('bars_alive', 0)}/{self.max_pending_bars} bars")
+        else:
+            state = "FLAT - no working order"
+        px = f"{current_price:.2f}" if current_price is not None else "n/a"
+        mode = "DRY-RUN" if self.signal_generator.dry_run else "LIVE"
+        return (f"[{mode}] {state} | px {px} | trades today {self.daily_trades}")
+
     def check_risk_limits(self) -> tuple[bool, str]:
         """
         Check if risk management limits allow trading
@@ -461,6 +478,8 @@ class TradingOrchestrator:
 
                     # Clear screen and show response
                     os.system('cls' if os.name == 'nt' else 'clear')
+                    print(self._status_banner(current_price))
+                    print("-" * 60)
                     print(self.trading_agent.format_decision_display(result, current_price))
                     print("\nWaiting for next bar")
 
