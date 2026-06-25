@@ -1,5 +1,5 @@
 {
-  "current_bar_index": 1,
+  "current_bar_index": 10,
   "overall_bias": "bearish",
   "waiting_for": "No quality setup",
   "long_assessment": {
@@ -12,7 +12,7 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The nearest bearish FVG above is 131.25 points away (entry would be near 30296). Price is 131 points below that level, with no EMA pull\u2011back, no breakout, and stochastic neutral. No confluence has emerged, so the long FVG_FILL setup remains invalid."
+    "reasoning": "The nearest bearish FVG above (30268.75\u201130301.00) is 160.75 points away. Price is well below the gap, there is no EMA pull\u2011back to a logical entry level, and stochastic is only mildly bullish (61.8). No confluence exists to justify a long entry, so the long setup remains invalid."
   },
   "short_assessment": {
     "status": "none",
@@ -24,9 +24,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The bullish FVG below sits 95 points above the current price. To activate a short FVG_FILL we need price to drop into the gap (around 30070). The market is still above the gap, trend is down but price is holding above EMA150 and stochastic is only mildly bullish. No pull\u2011back to the gap or level break has occurred, so the short setup is not viable."
+    "reasoning": "The bullish FVG below (30064.75\u201130077.50) sits 65.5 points below the current price. Entry would require a pull\u2011back into the gap around 30077.5. Even if price reached that level, the projected move to the final target (30069.75) yields a very poor R/R (~0.15) and does not meet the minimum 1.3:1 requirement. Stochastic is only modestly above 50 and the EMA structure, while in a downtrend, does not provide a clear support bounce at the gap. Therefore the short FVG_FILL lacks quality and remains \"none\"."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 9,
-  "last_updated": "2026-06-25T12:01:37.549935"
+  "bars_since_last_trade": 10,
+  "last_updated": "2026-06-25T13:01:01.785743"
 }
