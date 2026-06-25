@@ -1,5 +1,5 @@
 {
-  "current_bar_index": 12,
+  "current_bar_index": 1,
   "overall_bias": "bearish",
   "waiting_for": "No quality setup",
   "long_assessment": {
@@ -12,7 +12,7 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The nearest bearish FVG above is 144 points away (final target 30296). Price at 30152 is still far below the gap, with no pull\u2011back to EMA cluster, neutral stochastic, and no imminent break of the 30200 psychological level. No confluence has improved; therefore the long FVG_FILL remains invalid."
+    "reasoning": "The nearest bullish FVG is 972.5 points above the current price and there is no pull\u2011back to any EMA cluster. Stochastic is neutral and there is no price action at the 29400 psychological level. With no confluence the long FVG_FILL, EMA_BOUNCE or LEVEL_TRADE setups remain invalid."
   },
   "short_assessment": {
     "status": "none",
@@ -24,9 +24,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The bullish FVG below sits 82 points away (final target 30069.75). While price is above the gap, the distance is still large, EMA21/75 are above price (downtrend) but do not provide a near\u2011term bounce, stochastic is only mildly bullish, and there is no price action at the 30100 psychological level that would add confluence. The setup does not meet the minimum R/R or confidence threshold."
+    "reasoning": "Although the market is in a strong downtrend (EMA21 < EMA75 < EMA150), there is no bullish FVG below price, no clear EMA bounce short entry, and stochastic is only mildly bullish. The price is 633 points below EMA21, far from any actionable level, and psychological levels (29300/29400) have not been tested. Hence no short setup meets the minimum R/R or confidence threshold."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 12,
-  "last_updated": "2026-06-25T14:25:51.918760"
+  "bars_since_last_trade": 13,
+  "last_updated": "2026-06-25T15:00:46.604188"
 }
