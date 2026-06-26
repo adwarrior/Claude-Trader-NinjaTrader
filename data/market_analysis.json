@@ -1,7 +1,7 @@
 {
   "current_bar_index": 1,
   "overall_bias": "bearish",
-  "waiting_for": "price to approach EMA21 (~29568) for a short EMA\u2011bounce entry or a break below 29300 for a short level\u2011trade. No bullish confluence for a long setup.",
+  "waiting_for": "No quality setup \u2013 price is moving away from the EMA\u201121 short\u2011bounce level and the nearest bullish FVG is still far above current price.",
   "long_assessment": {
     "status": "none",
     "setup_type": null,
@@ -12,22 +12,22 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The only nearby bullish opportunity is the bearish FVG above (29506\u201129615) which would require a long fill. It is 236 points away, there is no bullish EMA support, stochastic is neutral and the market remains in a strong downtrend. No confluence meets the minimum R/R or confidence threshold, so no long setup is viable."
+    "reasoning": "The only bullish opportunity is the bearish FVG above (29506\u201129615). It is 230\u202fpts away, there is no bullish EMA support, stochastic is neutral and the market remains in a strong downtrend. No confluence meets the minimum R/R or confidence threshold, so no long setup is viable."
   },
   "short_assessment": {
-    "status": "waiting",
-    "setup_type": "EMA_BOUNCE",
-    "order_type": "LIMIT",
-    "entry_plan": 29568.81,
-    "stop_plan": 29608.81,
-    "raw_target": 29300.0,
-    "target_plan": 29305.0,
-    "risk_reward": 6.6,
-    "confidence": 0.55,
-    "reasoning": "We are still waiting for price to pull up to EMA21 (29568.81), which acts as dynamic resistance in the prevailing downtrend (EMA21 < EMA75 < EMA150). A pull\u2011back to this level would allow a short LIMIT entry. Stop is placed 40 points above the entry to give breathing room; target is the next psychological support at 29300, with the required 5\u2011point buffer applied. R/R \u2248 6.6:1 exceeds the 1.3 minimum, but confidence remains below the 0.65 threshold until price actually reaches the EMA.",
-    "setup_age_bars": 4
+    "status": "none",
+    "setup_type": null,
+    "order_type": null,
+    "entry_plan": null,
+    "stop_plan": null,
+    "raw_target": null,
+    "target_plan": null,
+    "risk_reward": null,
+    "confidence": 0.0,
+    "reasoning": "We were waiting for a pull\u2011back to EMA\u201121 (~29550) for a short EMA\u2011bounce. Current price is 29380, 170\u202fpts below that level, and moving further down, reducing the probability of a clean bounce. No break of the 29300 psychological level has occurred yet, and stochastic is only mildly oversold. With the entry moving farther away, the previous short setup is abandoned.",
+    "setup_age_bars": 5
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 21,
-  "last_updated": "2026-06-26T11:01:06.252545"
+  "bars_since_last_trade": 22,
+  "last_updated": "2026-06-26T12:39:04.311220"
 }
