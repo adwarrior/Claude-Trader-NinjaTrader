@@ -1,7 +1,7 @@
 {
   "current_bar_index": 1,
   "overall_bias": "bearish",
-  "waiting_for": "No quality setup",
+  "waiting_for": "Short EMA bounce to EMA21 for a pull\u2011back entry",
   "long_assessment": {
     "status": "none",
     "setup_type": null,
@@ -12,21 +12,22 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The only bullish opportunity is the FVG_FILL long above 29776.75\u201130117. Price is at 29545, still 567 points away from the gap top and well below EMA75 resistance. Stochastic is neutral and there is no EMA bounce, momentum, or psychological level break to support a long entry. Therefore no viable long setup exists."
+    "reasoning": "No bullish FVG below price, no EMA bounce long, stochastic is neutral and price is well below all EMA resistance levels. No confluence for a long entry at this bar."
   },
   "short_assessment": {
     "status": "none",
-    "setup_type": null,
-    "order_type": null,
-    "entry_plan": null,
-    "stop_plan": null,
-    "raw_target": null,
-    "target_plan": null,
-    "risk_reward": null,
-    "confidence": 0.0,
-    "reasoning": "There are no bearish FVGs below price, no pull\u2011back to EMA21 for an EMA_BOUNCE short, stochastic is not overbought, and price has not broken the nearest psychological level (29600) to trigger a level\u2011trade. The downtrend remains intact but lacks a concrete entry trigger, so no short setup qualifies."
+    "setup_type": "EMA_BOUNCE",
+    "order_type": "LIMIT",
+    "entry_plan": 29516.3,
+    "stop_plan": 29556.3,
+    "raw_target": 29400.0,
+    "target_plan": 29405.0,
+    "risk_reward": 2.78,
+    "confidence": 0.71,
+    "reasoning": "Strong downtrend confirmed by EMA21 < EMA75 < EMA150. Price is currently 100 points below EMA21, creating a classic pull\u2011back to EMA21 short setup. The EMA acts as dynamic resistance; a bounce to 29516.30 offers a clear limit entry. Confluence: bearish EMA alignment, proximity to EMA21, and nearby psychological support at 29400 for target. Stochastic is neutral but not contradictory. Stop placed 40 points above entry gives a comfortable breathing room while maintaining R/R > 1.3.",
+    "setup_age_bars": 0
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 29,
-  "last_updated": "2026-06-26T19:00:36.823280"
+  "bars_since_last_trade": 0,
+  "last_updated": "2026-06-26T20:00:47.590675"
 }
