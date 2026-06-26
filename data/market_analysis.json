@@ -1,5 +1,5 @@
 {
-  "current_bar_index": 27,
+  "current_bar_index": 28,
   "overall_bias": "bearish",
   "waiting_for": "No quality setup",
   "long_assessment": {
@@ -12,7 +12,7 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The only potential long is a FVG_FILL from the bearish gap above (29776.75\u201130117). Entry would require a strong upside move against the prevailing downtrend (EMA21 < EMA75 < EMA150) and there is no bullish momentum (stochastic 43.45 is neutral). With price 493 points away from the gap top, the setup lacks confluence and confidence, so it is rejected."
+    "reasoning": "The only potential long is the bullish FVG_FILL above (29776.75\u201130117). Price is at 29607, still 505 points away from the gap top and 169 points below the EMA75 resistance. Stochastic is neutral (47.97) and there is no bullish momentum or EMA alignment to support an upside move. No psychological level break or EMA bounce is present for a long entry. Therefore no viable long setup exists."
   },
   "short_assessment": {
     "status": "none",
@@ -24,9 +24,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "No bearish FVG below price, no pull\u2011back to EMA21 for an EMA_BOUNCE short, and stochastic is not overbought. The nearest psychological level (29600) has not been broken, so no level\u2011trade short is available. Hence no valid short setup."
+    "reasoning": "There are no bearish FVGs below price, no pull\u2011back to EMA21 for an EMA_BOUNCE short, stochastic is not overbought, and price has not broken the nearest psychological level (29600) to trigger a level\u2011trade. The downtrend (EMA21 < EMA75 < EMA150) remains intact but lacks a concrete entry trigger. Hence no short setup qualifies."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 27,
-  "last_updated": "2026-06-26T17:00:43.813593"
+  "bars_since_last_trade": 28,
+  "last_updated": "2026-06-26T18:00:42.375303"
 }
