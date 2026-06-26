@@ -257,7 +257,7 @@ class MarketAnalysisManager:
         short = analysis.get('short_assessment', {})
         lines.append(f"SHORT: {short.get('status', 'none').upper()} "
                     f"(Age: {short.get('setup_age_bars', 0)} bars, "
-                    f"Conf: {short.get('confidence', 0):.2f})")
+                    f"Conf: {(short.get('confidence') or 0):.2f})")
         lines.append("=" * 60)
 
         return "\n".join(lines)
