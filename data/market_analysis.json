@@ -12,7 +12,7 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The nearest bullish FVG (29506\u201129615) is still 163 points above current price (29443.25) and there is no pull\u2011back to EMA\u201121, no bullish momentum (stochastic 36.5 is neutral) and price remains well below EMA\u201121. No EMA\u2011bounce, momentum breakout, or psychological\u2011level trigger is present, so a long entry does not meet the 1.3:1 R/R or confidence threshold."
+    "reasoning": "The nearest bullish FVG is 163 points above the current price and there is no pull\u2011back to EMA\u201121, no bullish momentum (stochastic 38.9 is neutral) and price is just above the 29500 psychological level. No EMA bounce, momentum breakout, or level\u2011trade conditions are satisfied for a long entry, so the long setup remains NONE."
   },
   "short_assessment": {
     "status": "none",
@@ -24,9 +24,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "A short EMA\u2011bounce would require price to retest EMA\u201121 at 29505.67. Current price is 62 points below that level and moving lower, eliminating the bounce premise. The 29500 psychological level has not been broken, stochastic is not overbought, and there is no clear short momentum or FVG below price. Therefore no short setup satisfies the required criteria."
+    "reasoning": "Price is 0.44 points above EMA\u201121 and 5.75 points above the 29500 psychological level, eliminating a short EMA\u2011bounce. Stochastic is not overbought, and there is no bearish FVG below price. No short momentum or level\u2011trade trigger is present, so the short setup remains NONE."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 25,
-  "last_updated": "2026-06-26T15:00:42.326783"
+  "bars_since_last_trade": 26,
+  "last_updated": "2026-06-26T16:00:42.141635"
 }
