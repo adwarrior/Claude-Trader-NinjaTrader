@@ -1,7 +1,7 @@
 {
   "current_bar_index": 1,
   "overall_bias": "bearish",
-  "waiting_for": "price to rally to EMA21 (29615.5) for a short EMA bounce entry; no viable long confluence",
+  "waiting_for": "price to approach EMA21 (\u224829607) for a bounce short or to break below 29500 for a level\u2011trade short. No long confluence present.",
   "long_assessment": {
     "status": "none",
     "setup_type": null,
@@ -12,22 +12,22 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The nearest bearish FVG (29776.75\u201130117) is 573 points above current price, making a long FVG_FILL impractical. No bullish FVG below, EMA structure is strongly bearish, stochastic is neutral, and there is no confluence at psychological levels for a high\u2011probability long. Therefore no long setup meets the minimum R/R or confidence criteria."
+    "reasoning": "The market remains in a strong downtrend (EMA21 < EMA75 < EMA150). There are no bullish FVGs below the current price, no EMA support for a long pull\u2011back, stochastic is neutral and psychological levels above are resistance. No viable long setup meets the minimum 1.3:1 R/R or confidence threshold."
   },
   "short_assessment": {
     "status": "waiting",
-    "setup_type": "EMA_BOUNCE",
-    "order_type": "LIMIT",
-    "entry_plan": 29615.5,
-    "stop_plan": 29655.5,
-    "raw_target": 29500,
-    "target_plan": 29505.0,
-    "risk_reward": 2.76,
-    "confidence": 0.6,
-    "reasoning": "Downtrend confirmed (EMA21 < EMA75 < EMA150). A classic short EMA bounce is expected when price rallies to EMA21 (29615.5). Stop is placed 40 points above entry to give breathing room; target is the next psychological support at 29500 with a 5\u2011point buffer. Stochastic is neutral but the strong EMA alignment and clear support level provide moderate confidence. Awaiting price rally to the EMA21 level before the resting limit order can be placed.",
-    "setup_age_bars": 1
+    "setup_type": "LEVEL_TRADE",
+    "order_type": "STOP",
+    "entry_plan": null,
+    "stop_plan": null,
+    "raw_target": null,
+    "target_plan": null,
+    "risk_reward": null,
+    "confidence": 0.55,
+    "reasoning": "The previous EMA\u2011bounce short lost its entry zone because price has already moved below EMA21 (29607). The next plausible short trigger is a break below the psychological level 29500 with a retest, which would give a clear entry (stop order just below 29500). The bullish FVG below (29410\u201129435) is still far away, so we wait for price to approach the 29500 level before defining entry, stop and target. Confidence is moderate but below the 0.65 threshold.",
+    "setup_age_bars": 2
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 18,
-  "last_updated": "2026-06-26T09:00:01.706545"
+  "bars_since_last_trade": 19,
+  "last_updated": "2026-06-26T09:00:42.517706"
 }
