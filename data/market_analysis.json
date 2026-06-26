@@ -1,7 +1,7 @@
 {
-  "current_bar_index": 24,
+  "current_bar_index": 1,
   "overall_bias": "bearish",
-  "waiting_for": "No quality setup \u2013 price still far below EMA\u201121 and the nearest bullish FVG is 293 points away. No EMA\u2011bounce, momentum breakout, or psychological\u2011level trigger has formed.",
+  "waiting_for": "No quality setup",
   "long_assessment": {
     "status": "none",
     "setup_type": null,
@@ -12,7 +12,7 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The only long candidate remains the bearish FVG above (29506\u201129615). It is still 293 points away, with no pull\u2011back to EMA\u201121, no bullish momentum (stochastic 35.6 is neutral/oversold) and the market remains in a strong downtrend (EMA21 < EMA75 < EMA150). No confluence meets the 1.3:1 R/R or confidence threshold, so no viable long setup."
+    "reasoning": "The nearest bullish FVG (29506\u201129615) is still 163 points above current price (29443.25) and there is no pull\u2011back to EMA\u201121, no bullish momentum (stochastic 36.5 is neutral) and price remains well below EMA\u201121. No EMA\u2011bounce, momentum breakout, or psychological\u2011level trigger is present, so a long entry does not meet the 1.3:1 R/R or confidence threshold."
   },
   "short_assessment": {
     "status": "none",
@@ -24,9 +24,9 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "A short EMA\u2011bounce would require price to retest EMA\u201121 at 29512.18. Current price (29317.75) is 194 points below that level and moving further down, eliminating the bounce premise. Neither the 29300 psychological level nor a clear momentum breakout has occurred. Therefore no short entry criteria are satisfied."
+    "reasoning": "A short EMA\u2011bounce would require price to retest EMA\u201121 at 29505.67. Current price is 62 points below that level and moving lower, eliminating the bounce premise. The 29500 psychological level has not been broken, stochastic is not overbought, and there is no clear short momentum or FVG below price. Therefore no short setup satisfies the required criteria."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 24,
-  "last_updated": "2026-06-26T14:00:43.113856"
+  "bars_since_last_trade": 25,
+  "last_updated": "2026-06-26T15:00:42.326783"
 }
