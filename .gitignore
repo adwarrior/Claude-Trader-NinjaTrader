@@ -40,6 +40,14 @@ data/bot_state.json
 data/bot_control.json
 !data/.gitkeep
 
+# Machine-specific live/runtime state — must NOT sync across machines
+# (would clobber the other machine's live tracking if pulled)
+/bot_state.json
+data/market_analysis.json
+ati_reply.bin
+.codegraph/daemon.pid
+.claude/settings.local.json
+
 # Windows Mark-of-the-Web NTFS streams surfaced as files under WSL
 *:Zone.Identifier
 
