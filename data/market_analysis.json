@@ -1,7 +1,7 @@
 {
-  "current_bar_index": 1,
+  "current_bar_index": 2,
   "overall_bias": "bearish",
-  "waiting_for": "No quality setup \u2013 price is below EMA21, so the short EMA\u2011bounce pull\u2011back has lost confluence, and the nearest bullish FVG is far above with no momentum support.",
+  "waiting_for": "Price to rally to EMA21 (29498.09) for a short EMA\u2011bounce rejection entry",
   "long_assessment": {
     "status": "none",
     "setup_type": null,
@@ -12,21 +12,21 @@
     "target_plan": null,
     "risk_reward": null,
     "confidence": 0.0,
-    "reasoning": "The only long candidate is a FVG_FILL from the large bearish gap at 29776.75\u201130117.00. That gap is 728+ points away, with no price action or momentum indicating a move upward. Stochastic is neutral and EMA structure is strongly bearish, providing no bullish confluence. Therefore no viable long setup exists on this bar."
+    "reasoning": "No bullish FVG below price, no EMA\u2011bounce long opportunity, stochastic neutral and trend strongly bearish. No confluence for a long entry on this bar."
   },
   "short_assessment": {
-    "status": "none",
-    "setup_type": null,
-    "order_type": null,
-    "entry_plan": null,
-    "stop_plan": null,
-    "raw_target": null,
-    "target_plan": null,
-    "risk_reward": null,
-    "confidence": 0.0,
-    "reasoning": "The previous short EMA\u2011bounce plan required price to rally to EMA21 (29498.09) for a rejection entry. Current price is 29383.50, 115 points below EMA21, indicating the pull\u2011back has failed and the market is moving further away from the intended entry. No other short confluence (e.g., momentum breakout, level rejection) is present, so the short setup is abandoned."
+    "status": "waiting",
+    "setup_type": "EMA_BOUNCE",
+    "order_type": "LIMIT",
+    "entry_plan": 29498.09,
+    "stop_plan": 29538.09,
+    "raw_target": 29200.0,
+    "target_plan": 29205.0,
+    "risk_reward": 7.33,
+    "confidence": 0.42,
+    "reasoning": "Strong downtrend confirmed by EMA21 < EMA75 < EMA150. The price is 215 points below EMA21, so a short pull\u2011back\u2011to\u2011EMA bounce is the most viable bearish setup. Entry is a limit order at EMA21 (29498.09) expecting a rejection and move down to the next psychological support at 29200. Stochastic is neutral, but the EMA alignment provides sufficient confluence. Stop is placed 40 points above entry to give the trade breathing room."
   },
   "bars_since_last_update": 0,
-  "bars_since_last_trade": 1,
-  "last_updated": "2026-06-26T21:00:49.107443"
+  "bars_since_last_trade": 2,
+  "last_updated": "2026-06-27T08:12:33.253137"
 }
