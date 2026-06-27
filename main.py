@@ -133,6 +133,34 @@ class TradingOrchestrator:
 
         # Initialization complete
 
+    def _read_feed_status(self) -> dict:
+        """Read FeedStatus.csv, the heartbeat the NinjaTrader SecondHistoricalData
+        strategy writes every few seconds regardless of bar flow.
+
+        Returns a dict with keys: connected (bool|None), state (str|None),
+        heartbeat_age_sec (float|None), last_bar (str|None). All None when the
+        file is absent/unreadable (e.g. an older NT script without the heartbeat),
+        in which case callers fall back to the timestamp-only stale guard.
+        """
+        status = {'connected': None, 'state': None,
+                  'heartbeat_age_sec': None, 'last_bar': None}
+        try:
+            df = pd.read_csv('data/FeedStatus.csv')
+            if df.empty:
+                return status
+            row = df.iloc[-1]
+            status['state'] = str(row.get('State', '')) or None
+            connected = row.get('Connected')
+            if connected is not None and not pd.isna(connected):
+                status['connected'] = bool(int(connected))
+            hb = pd.to_datetime(row.get('Heartbeat'), errors='coerce')
+            if pd.notna(hb):
+                status['heartbeat_age_sec'] = (pd.Timestamp.now() - hb).total_seconds()
+            status['last_bar'] = str(row.get('LastBar', '')) or None
+        except (FileNotFoundError, OSError, ValueError, KeyError):
+            pass
+        return status
+
     def _read_control(self) -> None:
         """Honour pause + one-shot commands (cancel_entry / flatten) from the dashboard."""
         if not self.control_file.exists():
@@ -547,15 +575,37 @@ class TradingOrchestrator:
                     print(self._status_banner(current_price))
                     print("-" * 60)
 
+                    # Pull the NT heartbeat so we can distinguish a dropped feed
+                    # from a merely quiet market, and notice an auto-reconnect.
+                    feed_status = self._read_feed_status()
+                    connected = feed_status['connected']
+                    hb_age = feed_status['heartbeat_age_sec']
+                    # Heartbeat present but old => the NT strategy itself stopped
+                    # (chart closed / NT crashed), which is worse than a feed drop.
+                    heartbeat_dead = hb_age is not None and hb_age > 120
+
                     if feed_stale:
+                        # Build a cause string from the heartbeat when available.
+                        if connected is False:
+                            cause = ("NinjaTrader data feed is DISCONNECTED "
+                                     "(NT auto-reconnect in progress)")
+                        elif heartbeat_dead:
+                            cause = (f"NT heartbeat is {hb_age:.0f}s old - the "
+                                     f"SecondHistoricalData strategy/chart is not running")
+                        elif connected is True:
+                            cause = ("feed CONNECTED but no new bar - quiet market or "
+                                     "150-bar warmup / Days-to-load / data path issue")
+                        else:
+                            cause = ("no heartbeat file - check the SecondHistoricalData "
+                                     "strategy (150-bar warmup gate / Days-to-load / data path)")
+
                         # Throttle the WARNING log to once/min so it's loud in the log
                         # file without spamming on every 5s refresh.
                         if time.time() - last_stale_warning_wallclock >= 60:
                             logger.warning(
                                 f"STALE FEED: HistoricalData.csv has not advanced for "
                                 f"{stale_minutes:.0f} min (last bar {last_bar_time}). "
-                                f"Analysis is PAUSED - check the NinjaTrader SecondHistoricalData "
-                                f"strategy (150-bar warmup gate / chart Days-to-load / data path)."
+                                f"Analysis is PAUSED - {cause}."
                             )
                             last_stale_warning_wallclock = time.time()
 
@@ -565,10 +615,19 @@ class TradingOrchestrator:
                         print("  /!\\  STALE DATA FEED - analysis paused")
                         print(f"  HistoricalData.csv last advanced {stale_minutes:.0f} min ago")
                         print(f"  Last bar: {last_bar_time}")
+                        if connected is not None:
+                            hb_txt = f"{hb_age:.0f}s ago" if hb_age is not None else "n/a"
+                            print(f"  NT feed: {'CONNECTED' if connected else 'DISCONNECTED'} "
+                                  f"(heartbeat {hb_txt})")
+                        print(f"  Cause: {cause}")
                         if current_price is not None:
                             print(f"  Live price (LiveFeed.csv): {current_price:.2f}")
-                        print("  Fix the NinjaTrader SecondHistoricalData feed, then restart.")
+                        print("  NT auto-reconnects the feed; analysis resumes on the next new bar.")
                         print("=" * 60)
+                    elif connected is True and last_stale_warning_wallclock > 0:
+                        # We were stale and the feed has come back with fresh bars.
+                        logger.info("FEED RECOVERED: new bars flowing again, analysis resumed.")
+                        last_stale_warning_wallclock = 0.0
                     else:
                         # Show last decision with current price
                         if last_result:
