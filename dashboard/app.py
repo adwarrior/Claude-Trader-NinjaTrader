@@ -77,7 +77,8 @@ def _render_top():
     state = dl.read_state()
     price = dl.read_price()
     trades = dl.parse_trades()
-    st.html(ui.status_card(state, price, dry))
+    feed = dl.read_feed_status()
+    st.html(ui.status_card(state, price, dry, feed))
     st.html(ui.metrics_strip(dl.pnl_summary(trades)))
 
 

@@ -73,6 +73,73 @@ def read_bars(limit: int = 300) -> pd.DataFrame:
         return pd.DataFrame()
 
 
+# Heartbeat older than this => the NT SecondHistoricalData strategy itself has
+# stopped (chart closed / NT crashed), which is worse than a feed disconnect.
+HEARTBEAT_DEAD_SEC = 120
+
+
+def read_feed_status() -> dict:
+    """Feed health from FeedStatus.csv, the heartbeat the NinjaTrader
+    SecondHistoricalData strategy writes every few seconds regardless of bar
+    flow. Lets the dashboard show *why* the feed froze (disconnected vs. strategy
+    not running vs. quiet market).
+
+    Returns a dict the UI can render directly:
+        ok           : bool   - feed is connected AND heartbeat is fresh
+        connected    : bool|None
+        state        : str|None  (INIT|UP|DOWN|RECONNECTED|DISCONNECTED|TERMINATED)
+        heartbeat_age_sec : float|None
+        last_bar     : str|None
+        label        : str    - short human status ("Connected", "Disconnected", ...)
+        detail       : str    - one-line explanation for a tooltip/caption
+    """
+    status = {
+        "ok": False, "connected": None, "state": None,
+        "heartbeat_age_sec": None, "last_bar": None,
+        "label": "Unknown", "detail": "No FeedStatus.csv heartbeat yet.",
+    }
+    try:
+        df = pd.read_csv(DATA / "FeedStatus.csv")
+        if df.empty:
+            return status
+        row = df.iloc[-1]
+        state = str(row.get("State", "")) or None
+        status["state"] = state
+
+        connected = row.get("Connected")
+        if connected is not None and not pd.isna(connected):
+            status["connected"] = bool(int(connected))
+
+        hb = pd.to_datetime(row.get("Heartbeat"), errors="coerce")
+        if pd.notna(hb):
+            status["heartbeat_age_sec"] = (pd.Timestamp.now() - hb).total_seconds()
+
+        status["last_bar"] = str(row.get("LastBar", "")) or None
+    except (FileNotFoundError, OSError, ValueError, KeyError):
+        return status
+
+    age = status["heartbeat_age_sec"]
+    conn = status["connected"]
+    heartbeat_dead = age is not None and age > HEARTBEAT_DEAD_SEC
+
+    if heartbeat_dead:
+        status["label"] = "Strategy down"
+        status["detail"] = (f"NT heartbeat is {age:.0f}s old - the "
+                            f"SecondHistoricalData strategy/chart is not running.")
+    elif conn is False:
+        status["label"] = "Disconnected"
+        status["detail"] = "NinjaTrader data feed is disconnected (auto-reconnect in progress)."
+    elif conn is True:
+        status["ok"] = True
+        status["label"] = "Connected"
+        status["detail"] = "NinjaTrader data feed is connected and the heartbeat is fresh."
+    else:
+        status["label"] = "Unknown"
+        status["detail"] = "Heartbeat present but connection state is unreadable."
+
+    return status
+
+
 # ---- closed-trade ledger reconstructed from the log -------------------------
 
 @dataclass

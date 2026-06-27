@@ -10,7 +10,35 @@ def _fmt(x, nd=2):
         return "—"
 
 
-def status_card(state: dict, price, dry_run: bool) -> str:
+def _feed_pill(feed: dict | None) -> str:
+    """Small colored pill showing NinjaTrader data-feed health from FeedStatus.csv.
+
+    Green = connected & fresh heartbeat, amber = disconnected (NT auto-reconnecting),
+    red = strategy/chart not running, grey = no heartbeat file yet. The full
+    explanation rides along as a hover tooltip.
+    """
+    if not feed:
+        return ""
+    label = escape(str(feed.get("label", "Unknown")))
+    detail = escape(str(feed.get("detail", "")))
+    if feed.get("ok"):
+        color = "var(--color-success, #3fb950)"
+    elif feed.get("connected") is False:
+        color = "var(--accent-amber, #d29922)"
+    elif feed.get("connected") is None:
+        color = "var(--ct-muted, #8b949e)"
+    else:
+        color = "var(--color-warning, #f85149)"
+    age = feed.get("heartbeat_age_sec")
+    age_txt = f" · {age:.0f}s" if isinstance(age, (int, float)) else ""
+    return (f"<span class='ct-feed-pill' title='{detail}' "
+            f"style='display:inline-flex;align-items:center;gap:5px;font-size:11px;"
+            f"font-family:var(--font-mono);white-space:nowrap'>"
+            f"<span style='width:8px;height:8px;border-radius:50%;background:{color};"
+            f"display:inline-block'></span>Feed: {label}{age_txt}</span>")
+
+
+def status_card(state: dict, price, dry_run: bool, feed: dict | None = None) -> str:
     pending = state.get("pending_entry")
     pos = state.get("in_position")
     if pos:
@@ -39,6 +67,7 @@ def status_card(state: dict, price, dry_run: bool) -> str:
     px = f"<div class='ct-kv'><span class='k'>Price</span><span class='v'>{_fmt(price)}</span></div>"
     return (f"<div class='ct-card'><div class='ct-status-row'>"
             f"<span class='ct-state-pill {cls}'>{pill}</span>{detail}{px}"
+            f"{_feed_pill(feed)}"
             f"<span class='ct-mode {mode_cls}'>{mode_txt}</span>"
             f"</div></div>")
 
