@@ -1,0 +1,6 @@
+{
+  // Hide Windows Mark-of-the-Web NTFS streams that WSL surfaces as files.
+  "files.exclude": {
+    "**/*:Zone.Identifier": true
+  }
+}

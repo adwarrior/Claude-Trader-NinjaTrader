@@ -40,8 +40,12 @@ data/bot_state.json
 data/bot_control.json
 !data/.gitkeep
 
-# IDE
-.vscode/
+# Windows Mark-of-the-Web NTFS streams surfaced as files under WSL
+*:Zone.Identifier
+
+# IDE — ignore .vscode contents but keep shared settings.json
+.vscode/*
+!.vscode/settings.json
 .idea/
 *.swp
 *.swo
