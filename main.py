@@ -9,6 +9,7 @@ import logging
 import sys
 import time
 import os
+import pandas as pd
 from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
