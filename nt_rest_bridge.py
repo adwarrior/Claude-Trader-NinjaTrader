@@ -33,9 +33,19 @@ import uuid
 from pathlib import Path
 from typing import Literal, Optional
 
-# Default NT8 incoming folder on Windows (under the user's Documents).
+# Default NT8 incoming folder (under the user's Windows Documents).
+# Under WSL, Path.home() is the Linux home — NT8 lives on the Windows side,
+# so probe the /mnt/c mount too. NT8_INCOMING_DIR env var overrides everything.
 def _default_incoming_dir() -> str:
-    return str(Path.home() / "Documents" / "NinjaTrader 8" / "incoming")
+    override = os.getenv("NT8_INCOMING_DIR")
+    if override:
+        return override
+    candidates = [Path.home() / "Documents" / "NinjaTrader 8" / "incoming"]
+    candidates += sorted(Path("/mnt/c/Users").glob("*/Documents/NinjaTrader 8/incoming"))
+    for c in candidates:
+        if c.is_dir():
+            return str(c)
+    return str(candidates[0])
 
 
 class NTBridgeError(Exception):

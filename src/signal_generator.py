@@ -20,6 +20,7 @@ from pathlib import Path
 # nt_rest_bridge.py lives at the project root, one level above src/
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from nt_rest_bridge import NTBridge, NTBridgeError
+from src.alerts import send_alert
 
 logger = logging.getLogger(__name__)
 
