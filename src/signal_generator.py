@@ -56,6 +56,17 @@ class SignalGenerator:
 
         self.bridge = bridge or NTBridge(account=account, host=host, port=port)
 
+        # Fail loudly at startup if the OIF folder is missing — otherwise every
+        # order placement silently dies later (this bit us for two weeks).
+        if not dry_run and not self.bridge.incoming_dir.is_dir():
+            msg = (
+                f"NT8 incoming folder not found: {self.bridge.incoming_dir}\n"
+                "Orders CANNOT be placed. Check NT8 is installed, the AT Interface "
+                "is enabled, and NT8_INCOMING_DIR in .env if the auto-detect is wrong."
+            )
+            logger.error(msg)
+            send_alert("NT8 incoming folder missing at startup", msg, key="bridge_dir")
+
         # In-memory signal history (replaces the old CSV log)
         self._history: list[Dict[str, Any]] = []
 
@@ -190,6 +201,7 @@ class SignalGenerator:
 
         except NTBridgeError as e:
             logger.error(f"Error submitting signal to NT8 ATI: {e}")
+            send_alert("Order submission to NT8 failed", str(e), key="bridge_error")
             return False
 
     def place_entry(self, decision: Dict[str, Any],
@@ -254,6 +266,7 @@ class SignalGenerator:
             return pending
         except NTBridgeError as e:
             logger.error(f"Error placing resting entry to NT8 ATI: {e}")
+            send_alert("Resting entry placement failed", str(e), key="bridge_error")
             return None
 
     def place_exits(self, pending: Dict[str, Any]) -> bool:
@@ -276,6 +289,10 @@ class SignalGenerator:
             return True
         except NTBridgeError as e:
             logger.error(f"Error placing bracket exits to NT8 ATI: {e}")
+            send_alert(
+                "Bracket exits (SL/TP) placement failed — POSITION MAY BE UNPROTECTED",
+                str(e), key="bridge_exits",
+            )
             return False
 
     def cancel_entry(self, pending: Dict[str, Any]) -> bool:

@@ -43,9 +43,11 @@ def send_alert(subject: str, body: str, key: str = "default") -> bool:
             logger.info(f"Alert '{key}' suppressed (cooldown active)")
             return False
 
-        user = os.getenv("GMAIL_USER", "").strip()
-        password = os.getenv("GMAIL_APP_PASSWORD", "").strip().replace(" ", "")
-        to_addr = os.getenv("ALERT_EMAIL", user).strip()
+        # join/split kills ALL whitespace, including the \xa0 non-breaking
+        # spaces Gmail app passwords tend to be pasted with
+        user = "".join(os.getenv("GMAIL_USER", "").split())
+        password = "".join(os.getenv("GMAIL_APP_PASSWORD", "").split())
+        to_addr = "".join(os.getenv("ALERT_EMAIL", user).split())
         if not user or not password:
             logger.error("Alert NOT sent: GMAIL_USER / GMAIL_APP_PASSWORD missing from .env")
             return False
