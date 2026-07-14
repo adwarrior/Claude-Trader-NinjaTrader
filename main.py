@@ -382,18 +382,27 @@ class TradingOrchestrator:
                     bar_low = float(historical_df.iloc[-1]['Low'])
 
                     if self.in_position:
-                        exit_kind = self._check_position_exit(self.in_position, bar_high, bar_low)
-                        if exit_kind:
-                            pos = self.in_position
-                            logger.info(f"POSITION EXIT inferred ({exit_kind}): {pos['direction']} "
-                                        f"entry {pos['entry']:.2f} | SL {pos['stop']:.2f} | TP {pos['target']:.2f}")
-                            self.in_position = None
-                            self._save_state()
+                        pos = self.in_position
+                        # Never infer an exit from the entry bar itself: the SL/TP
+                        # bracket only exists in NT from that bar's CLOSE, so intrabar
+                        # excursions there predate the orders. A restart re-processing
+                        # the entry bar once inferred a phantom stop-out this way.
+                        if str(current_bar_time) == str(pos.get('entry_bar_time')):
+                            logger.info("Exit check skipped: still on entry bar "
+                                        f"({current_bar_time}) — bracket was placed at its close")
+                        else:
+                            exit_kind = self._check_position_exit(pos, bar_high, bar_low)
+                            if exit_kind:
+                                logger.info(f"POSITION EXIT inferred ({exit_kind}): {pos['direction']} "
+                                            f"entry {pos['entry']:.2f} | SL {pos['stop']:.2f} | TP {pos['target']:.2f}")
+                                self.in_position = None
+                                self._save_state()
                     elif self.pending_entry:
                         pend = self.pending_entry
                         if self._check_entry_fill(pend, bar_high, bar_low):
                             logger.info(f"ENTRY FILL inferred: {pend['direction']} {pend['order_type']} "
                                         f"@ {pend['entry']:.2f} -> placing SL/TP bracket")
+                            pend['entry_bar_time'] = str(current_bar_time)
                             self.signal_generator.place_exits(pend)
                             self.in_position = pend
                             self.pending_entry = None
