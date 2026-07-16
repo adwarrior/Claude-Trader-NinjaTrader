@@ -22,6 +22,7 @@ from src.memory_manager import MemoryManager
 from src.signal_generator import SignalGenerator
 from src.backtest_engine import BacktestEngine
 from src.market_analysis_manager import MarketAnalysisManager
+from src.alerts import send_alert
 
 # Load environment variables
 load_dotenv()
@@ -255,6 +256,109 @@ class TradingOrchestrator:
             return 'TARGET'
         return None
 
+    def _poll_entry_fill(self, current_price, bar_time) -> None:
+        """Read NT's reply file for the working entry order. Reply files persist
+        across bot/WSL downtime, so a fill that happened while we were dead is
+        seen here immediately on the next loop — not an hour later via bar
+        inference. On FILLED, record the REAL fill price and bracket at once."""
+        pend = self.pending_entry
+        status = self.signal_generator.order_status(pend.get('order_id'))
+        if not status:
+            return
+        state, qty, fill_price = status
+        if state == 'FILLED':
+            if fill_price:
+                pend['entry'] = fill_price
+            logger.info(f"ENTRY FILL confirmed: {pend['direction']} {pend['order_type']} "
+                        f"@ {pend['entry']:.2f} -> placing SL/TP bracket")
+            self._place_bracket(pend, current_price, bar_time)
+        elif state in ('CANCELLED', 'REJECTED'):
+            logger.warning(f"ENTRY {state} by NT - clearing pending entry "
+                           f"({pend['direction']} @ {pend['entry']:.2f}, id={pend.get('order_id')})")
+            if state == 'REJECTED':
+                send_alert("Entry order REJECTED by NT", f"{pend}", key="bridge_error")
+            self.pending_entry = None
+            self._save_state()
+
+    def _place_bracket(self, pend: dict, current_price, bar_time) -> None:
+        """Transition pending -> in_position: send the SL/TP OCO pair and verify
+        NT actually accepted it. Fail-safes (both flatten at market rather than
+        hold a naked position):
+          - price already through the stop when we get here (bracket is late,
+            e.g. bot was down over the fill): NT would reject the stop anyway;
+          - NT replies REJECTED/CANCELLED for either exit order."""
+        pend['entry_bar_time'] = str(bar_time)
+        self.pending_entry = None
+        self.daily_trades += 1
+
+        stop_breached = (
+            current_price is not None and (
+                current_price <= pend['stop'] if pend['direction'] == 'LONG'
+                else current_price >= pend['stop'])
+        )
+        if stop_breached:
+            logger.error(f"STOP ALREADY BREACHED at bracket time: px {current_price:.2f} vs "
+                         f"SL {pend['stop']:.2f} ({pend['direction']}) - flattening instead "
+                         f"of placing an invalid bracket")
+            send_alert("Bracket too late - stop already breached, position flattened",
+                       f"px {current_price} | {pend}", key="bridge_exits")
+            self.signal_generator.close_position()
+            self.in_position = None
+            self._save_state()
+            return
+
+        placed = self.signal_generator.place_exits(pend)
+        self.in_position = pend
+        self._save_state()
+        if not placed:
+            # Could not even hand the orders to NT (alert already sent) - do not
+            # sit unprotected.
+            logger.error("Bracket hand-off failed - flattening unprotected position")
+            self.signal_generator.close_position()
+            self.in_position = None
+            self._save_state()
+            return
+
+        # Give NT a moment to answer, then check for rejections. If replies are
+        # slow, _reconcile_exit_orders() re-checks every loop iteration anyway.
+        if pend.get('sl_order_id'):
+            time.sleep(3)
+            self._reconcile_exit_orders()
+
+    def _reconcile_exit_orders(self) -> None:
+        """Read NT's replies for the SL/TP orders. A FILLED reply is a real,
+        confirmed exit (no more guessing from bar ranges). REJECTED/CANCELLED
+        without a fill means the bracket is NOT live - the position is naked -
+        so flatten immediately and say so loudly."""
+        pos = self.in_position
+        sl = self.signal_generator.order_status(pos.get('sl_order_id'))
+        tp = self.signal_generator.order_status(pos.get('tp_order_id'))
+        if sl is None and tp is None:
+            return
+
+        detail = (f"{pos['direction']} entry {pos['entry']:.2f} "
+                  f"| SL {pos['stop']:.2f} | TP {pos['target']:.2f}")
+        if tp and tp[0] == 'FILLED':
+            logger.info(f"POSITION EXIT confirmed (TARGET): {detail}")
+            self.in_position = None
+            self._save_state()
+            return
+        if sl and sl[0] == 'FILLED':
+            logger.info(f"POSITION EXIT confirmed (STOP): {detail}")
+            self.in_position = None
+            self._save_state()
+            return
+
+        dead = ('REJECTED', 'CANCELLED')
+        if (sl and sl[0] in dead) or (tp and tp[0] in dead):
+            logger.error(f"BRACKET NOT LIVE (SL={sl} TP={tp}) - position is "
+                         f"UNPROTECTED, flattening at market: {detail}")
+            send_alert("SL/TP not live in NT - position flattened",
+                       f"SL={sl} TP={tp} | {detail}", key="bridge_exits")
+            self.signal_generator.close_position()
+            self.in_position = None
+            self._save_state()
+
     def _status_banner(self, current_price=None) -> str:
         """One-line at-a-glance state line shown above the detailed display."""
         if self.in_position:
@@ -350,6 +454,16 @@ class TradingOrchestrator:
 
                 # Get latest bar timestamp
                 current_bar_time = historical_df.iloc[-1]['DateTime']
+
+                # NT reply-file read-back EVERY iteration (~5s), not just on new
+                # hourly bars: confirm entry fills the moment they happen (even
+                # fills that occurred while the bot was down - reply files
+                # persist) and watch the SL/TP orders for fills or rejections.
+                if self.in_position:
+                    self._reconcile_exit_orders()
+                elif self.pending_entry and self.pending_entry.get('order_id'):
+                    self._poll_entry_fill(fvg_display.read_current_price(),
+                                          current_bar_time)
 
                 # Check if new bar arrived
                 if current_bar_time != last_bar_time:

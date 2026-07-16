@@ -285,6 +285,11 @@ class SignalGenerator:
                 stop_loss=pending['stop'],
                 take_profit=pending['target'],
             )
+            # Keep the ids so the main loop can read NT's accept/reject/fill
+            # replies for these orders ("placed" here only means "handed over").
+            pending['sl_order_id'] = resp.get('sl_id')
+            pending['tp_order_id'] = resp.get('tp_id')
+            pending['oco'] = resp.get('oco')
             logger.info(f"Bracket exits placed (OCO): {resp}")
             return True
         except NTBridgeError as e:
@@ -310,6 +315,20 @@ class SignalGenerator:
         except NTBridgeError as e:
             logger.error(f"Error cancelling resting entry {order_id}: {e}")
             return False
+
+    def order_status(self, order_id: Optional[str]):
+        """(status, filled_qty, avg_price) from NT's reply file, or None when
+        no reply exists yet (or in dry-run, where no real order was sent)."""
+        if self.dry_run or not order_id or order_id.startswith('dry-'):
+            return None
+        return self.bridge.order_status(order_id)
+
+    def position_status(self):
+        """NT's live position for our instrument as (direction, qty, avg_price),
+        or None when unknown (dry-run / file missing)."""
+        if self.dry_run:
+            return None
+        return self.bridge.position_status(self.instrument)
 
     def close_position(self) -> bool:
         """Flatten the configured instrument and cancel its working orders."""

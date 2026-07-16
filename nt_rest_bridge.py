@@ -187,10 +187,14 @@ class NTBridge:
         action = "BUY" if direction in ("LONG", "BUY") else "SELL"
         exit_action = "SELL" if action == "BUY" else "BUY"
         oco = f"oco-{uuid.uuid4().hex[:12]}"
+        sl_id = f"sl-{uuid.uuid4().hex[:12]}"
+        tp_id = f"tp-{uuid.uuid4().hex[:12]}"
 
-        sl = self.stop_market_order(instrument, exit_action, quantity, stop_loss, tif="GTC", oco=oco)
-        tp = self.limit_order(instrument, exit_action, quantity, take_profit, tif="GTC", oco=oco)
-        return {"sl": sl, "tp": tp, "oco": oco}
+        self._place(instrument, exit_action, quantity, "STOPMARKET",
+                    stop=stop_loss, tif="GTC", oco=oco, order_id=sl_id)
+        self._place(instrument, exit_action, quantity, "LIMIT",
+                    limit=take_profit, tif="GTC", oco=oco, order_id=tp_id)
+        return {"sl_id": sl_id, "tp_id": tp_id, "oco": oco}
 
     def bracket_order(
         self,
@@ -209,6 +213,53 @@ class NTBridge:
         entry = self.market_order(instrument, action, quantity, tif="DAY")
         exits = self.bracket_exits(instrument, direction, quantity, stop_loss, take_profit)
         return {"entry": entry, **exits}
+
+    # ------------------------------------------------------------------
+    # Read-back: NT's outgoing reply files
+    # ------------------------------------------------------------------
+    # For every PLACE that carries an ORDERID, NT maintains
+    #   outgoing/<ACCOUNT>_<ORDERID>.txt  ->  <STATUS>;<FILLED QTY>;<AVG PRICE>
+    # and per instrument
+    #   outgoing/<FULL INSTRUMENT>_<ACCOUNT>_position.txt  ->  <POS>;<QTY>;<AVG PRICE>
+    # These persist across NT/bot restarts, so a fill that happened while this
+    # process was down is still readable afterwards.
+
+    _MONTH_CODES = {"01": "JAN", "02": "FEB", "03": "MAR", "04": "APR",
+                    "05": "MAY", "06": "JUN", "07": "JUL", "08": "AUG",
+                    "09": "SEP", "10": "OCT", "11": "NOV", "12": "DEC"}
+
+    @property
+    def outgoing_dir(self) -> Path:
+        return self.incoming_dir.parent / "outgoing"
+
+    def order_status(self, order_id: str) -> Optional[tuple]:
+        """Return (status, filled_qty, avg_fill_price) for an order we placed
+        with an ORDERID, or None while NT has not written a reply yet."""
+        if not order_id:
+            return None
+        path = self.outgoing_dir / f"{self.account}_{order_id}.txt"
+        try:
+            parts = path.read_text().strip().split(";")
+            return parts[0].upper(), int(float(parts[1] or 0)), float(parts[2] or 0)
+        except (OSError, IndexError, ValueError):
+            return None
+
+    def position_status(self, instrument: str) -> Optional[tuple]:
+        """Return (direction, qty, avg_price) for e.g. 'NQ 09-26' from NT's
+        position file ('LONG'/'SHORT'/'FLAT'), or None if unreadable. NT names
+        the file with the full instrument name, e.g. 'NQ SEP26 Globex'."""
+        try:
+            symbol, expiry = instrument.rsplit(" ", 1)
+            month, year = expiry.split("-")
+            full_name = f"{symbol} {self._MONTH_CODES[month]}{year} Globex"
+        except (ValueError, KeyError):
+            return None
+        path = self.outgoing_dir / f"{full_name}_{self.account}_position.txt"
+        try:
+            parts = path.read_text().strip().split(";")
+            return parts[0].upper(), int(float(parts[1] or 0)), float(parts[2] or 0)
+        except (OSError, IndexError, ValueError):
+            return None
 
     # ------------------------------------------------------------------
     # Internal: write the OIF file
