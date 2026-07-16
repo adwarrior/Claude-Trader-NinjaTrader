@@ -497,11 +497,17 @@ class TradingOrchestrator:
 
                     if self.in_position:
                         pos = self.in_position
+                        # Exits are normally confirmed from NT's reply files by
+                        # _reconcile_exit_orders(). Bar inference remains only as
+                        # a fallback for positions without tracked exit orders
+                        # (dry-run / state recovered from an older version).
+                        if pos.get('sl_order_id') and not self.signal_generator.dry_run:
+                            pass
                         # Never infer an exit from the entry bar itself: the SL/TP
                         # bracket only exists in NT from that bar's CLOSE, so intrabar
                         # excursions there predate the orders. A restart re-processing
                         # the entry bar once inferred a phantom stop-out this way.
-                        if str(current_bar_time) == str(pos.get('entry_bar_time')):
+                        elif str(current_bar_time) == str(pos.get('entry_bar_time')):
                             logger.info("Exit check skipped: still on entry bar "
                                         f"({current_bar_time}) — bracket was placed at its close")
                         else:
@@ -509,19 +515,30 @@ class TradingOrchestrator:
                             if exit_kind:
                                 logger.info(f"POSITION EXIT inferred ({exit_kind}): {pos['direction']} "
                                             f"entry {pos['entry']:.2f} | SL {pos['stop']:.2f} | TP {pos['target']:.2f}")
+                                # Before trusting the guess, ask NT's position file.
+                                # If the position is actually still open, it has no
+                                # live bracket (no tracked ids) - flatten, don't
+                                # walk away from a naked position.
+                                nt_pos = self.signal_generator.position_status()
+                                if nt_pos and nt_pos[0] != 'FLAT':
+                                    logger.error(f"NT still shows {nt_pos[0]} {nt_pos[1]} - "
+                                                 f"flattening unprotected position")
+                                    send_alert("Inferred exit but NT position still open - flattened",
+                                               f"NT={nt_pos}", key="bridge_exits")
+                                    self.signal_generator.close_position()
                                 self.in_position = None
                                 self._save_state()
                     elif self.pending_entry:
                         pend = self.pending_entry
-                        if self._check_entry_fill(pend, bar_high, bar_low):
+                        # Fill read-back (_poll_entry_fill) is the primary detector;
+                        # bar-range inference stays as fallback when NT has written
+                        # no reply for the entry (dry-run / reply file lost).
+                        if self.signal_generator.order_status(pend.get('order_id')):
+                            pass
+                        elif self._check_entry_fill(pend, bar_high, bar_low):
                             logger.info(f"ENTRY FILL inferred: {pend['direction']} {pend['order_type']} "
                                         f"@ {pend['entry']:.2f} -> placing SL/TP bracket")
-                            pend['entry_bar_time'] = str(current_bar_time)
-                            self.signal_generator.place_exits(pend)
-                            self.in_position = pend
-                            self.pending_entry = None
-                            self.daily_trades += 1
-                            self._save_state()
+                            self._place_bracket(pend, current_price, current_bar_time)
                         else:
                             pend['bars_alive'] += 1
                             if pend['bars_alive'] >= self.max_pending_bars:

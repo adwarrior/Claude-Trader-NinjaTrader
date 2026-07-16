@@ -164,9 +164,9 @@ _RE_PLACE_LIVE = re.compile(
     r"Resting (LIMIT|STOP) entry placed: (LONG|SHORT) @ ([\d.]+).*?SL ([\d.]+) \| TP ([\d.]+)")
 _RE_PLACE_DRY = re.compile(
     r"\[DRY RUN\] Would place resting (LIMIT|STOP) entry: (LONG|SHORT) .*?@ ([\d.]+) \| SL ([\d.]+) \| TP ([\d.]+)")
-_RE_FILL = re.compile(r"ENTRY FILL inferred: (LONG|SHORT) (LIMIT|STOP) @ ([\d.]+)")
+_RE_FILL = re.compile(r"ENTRY FILL (?:inferred|confirmed): (LONG|SHORT) (LIMIT|STOP) @ ([\d.]+)")
 _RE_EXIT = re.compile(
-    r"POSITION EXIT inferred \((STOP|TARGET)\): (LONG|SHORT) entry ([\d.]+) \| SL ([\d.]+) \| TP ([\d.]+)")
+    r"POSITION EXIT (?:inferred|confirmed) \((STOP|TARGET)\): (LONG|SHORT) entry ([\d.]+) \| SL ([\d.]+) \| TP ([\d.]+)")
 _RE_EXPIRE = re.compile(r"RESTING ENTRY EXPIRED after \d+ bars \(unfilled @ ([\d.]+)\)")
 _RE_TS = re.compile(r"^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})")
 
