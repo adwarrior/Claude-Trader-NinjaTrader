@@ -662,25 +662,44 @@ class TradingOrchestrator:
                                         'setup_type': chosen_setup.get('setup_type', 'fvg_only')
                                     }
 
-                                    logger.info(f"ARMING RESTING ENTRY: {primary} {signal['order_type']} @ {signal['entry']:.0f}")
-                                    logger.info(f"R:R {signal['risk_reward']:.2f}:1 | Confidence: {signal['confidence']:.2f}")
+                                    # Instant-fill guard: a "resting" entry already through the
+                                    # market fills immediately at a price the LLM never planned
+                                    # for (09:20 07-17: sell limit 28600 with price 28690 filled
+                                    # on placement and stopped straight out). Re-read the price —
+                                    # the LLM call above can take minutes — and skip the setup if
+                                    # the order would be marketable now; next bar re-evaluates.
+                                    px = fvg_display.read_current_price()
+                                    if px is None:
+                                        px = current_price
+                                    _ot = signal['order_type']
+                                    _marketable = (
+                                        (_ot == 'LIMIT' and (px <= signal['entry'] if primary == 'LONG' else px >= signal['entry'])) or
+                                        (_ot == 'STOP' and (px >= signal['entry'] if primary == 'LONG' else px <= signal['entry']))
+                                    )
+                                    if _marketable:
+                                        logger.warning(f"INSTANT-FILL GUARD: {primary} {_ot} @ {signal['entry']:.2f} "
+                                                       f"already marketable at {px:.2f} - skipping setup "
+                                                       f"(resting entry must wait for price, not fill on placement)")
+                                    else:
+                                        logger.info(f"ARMING RESTING ENTRY: {primary} {signal['order_type']} @ {signal['entry']:.0f}")
+                                        logger.info(f"R:R {signal['risk_reward']:.2f}:1 | Confidence: {signal['confidence']:.2f}")
 
-                                    try:
-                                        pending = self.signal_generator.place_entry(signal)
-                                        if pending:
-                                            pending['bar_time'] = current_bar_time
-                                            pending['bars_alive'] = 0
-                                            self.pending_entry = pending
-                                            self._save_state()
-                                            # Mark trade as executed in analysis manager
-                                            self.analysis_manager.mark_trade_executed(primary)
-                                            logger.info(f"RESTING ENTRY ARMED: {primary} order working at {signal['entry']:.2f}")
-                                        else:
-                                            logger.warning("ENTRY PLACEMENT FAILED: validation or bridge error")
-                                    except Exception as e:
-                                        logger.error(f"ERROR PLACING ENTRY: {e}")
-                                        import traceback
-                                        logger.error(traceback.format_exc())
+                                        try:
+                                            pending = self.signal_generator.place_entry(signal)
+                                            if pending:
+                                                pending['bar_time'] = current_bar_time
+                                                pending['bars_alive'] = 0
+                                                self.pending_entry = pending
+                                                self._save_state()
+                                                # Mark trade as executed in analysis manager
+                                                self.analysis_manager.mark_trade_executed(primary)
+                                                logger.info(f"RESTING ENTRY ARMED: {primary} order working at {signal['entry']:.2f}")
+                                            else:
+                                                logger.warning("ENTRY PLACEMENT FAILED: validation or bridge error")
+                                        except Exception as e:
+                                            logger.error(f"ERROR PLACING ENTRY: {e}")
+                                            import traceback
+                                            logger.error(traceback.format_exc())
                             else:
                                 logger.info("NO TRADE: Primary decision is NONE")
                         else:
