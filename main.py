@@ -533,9 +533,14 @@ class TradingOrchestrator:
                         # Fill read-back (_poll_entry_fill) is the primary detector;
                         # bar-range inference stays as fallback when NT has written
                         # no reply for the entry (dry-run / reply file lost).
-                        if self.signal_generator.order_status(pend.get('order_id')):
-                            pass
-                        elif self._check_entry_fill(pend, bar_high, bar_low):
+                        # A reply that merely says the order is still WORKING must
+                        # NOT short-circuit this block: the order still has to age
+                        # toward max_pending_bars, or it rests forever and blocks
+                        # every new setup.
+                        status = self.signal_generator.order_status(pend.get('order_id'))
+                        if status and status[0] == 'FILLED':
+                            pass  # _poll_entry_fill places the bracket on its next pass
+                        elif status is None and self._check_entry_fill(pend, bar_high, bar_low):
                             logger.info(f"ENTRY FILL inferred: {pend['direction']} {pend['order_type']} "
                                         f"@ {pend['entry']:.2f} -> placing SL/TP bracket")
                             self._place_bracket(pend, current_price, current_bar_time)
